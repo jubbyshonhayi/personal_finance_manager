@@ -1,20 +1,20 @@
 [
     {
-        "id": "15c391a5-9548-4a4e-9829-03df0618f521",
+        "id": "cff37510-8496-4424-8f8a-2afa4436dee4",
         "user_id": "demo-user",
         "amount": 30.0,
-        "transaction_type": "Expense",
-        "category": "grocery",
-        "description": "monthly grocery",
-        "date": "2026-07-19T13:57:26.472013"
+        "transaction_type": "Income",
+        "category": "food",
+        "description": "dinner",
+        "date": "2026-07-19T21:19:06.958708"
     },
     {
-        "id": "0bb42f9f-d35b-47d7-b106-38427a5d6b90",
+        "id": "20aa6e3e-5d1c-48a6-b258-e493d8842ab0",
         "user_id": "demo-user",
-        "amount": 60.0,
+        "amount": 500.0,
         "transaction_type": "Income",
-        "category": "june salary",
-        "description": "salary",
-        "date": "2026-07-19T14:18:58.995396"
+        "category": "salary",
+        "description": "june salary",
+        "date": "2026-07-19T21:19:48.099219"
     }
 ]

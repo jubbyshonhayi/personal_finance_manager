@@ -22,7 +22,7 @@ class TransactionService:
         transactions.append(transaction.to_dict())
 
         self.storage.save_data(TRANSACTIONS_FILE, transactions) 
-        
+
 
     def get_all_transactions(self):
         """Retrieves all transactions from storage."""
@@ -35,6 +35,35 @@ class TransactionService:
             transactions.append(Transaction.from_dict(transaction_data))
             
         return transactions
+    
+
+    def update_transaction(self, transaction_id: str, updated_transaction: Transaction):
+        """Update an existing transaction."""
+
+        transactions = self.storage.load_data(TRANSACTIONS_FILE)
+
+        for index, transaction in enumerate(transactions):
+            if transaction["id"] == transaction_id:
+                transactions[index] = updated_transaction.to_dict()
+                self.storage.save_data(TRANSACTIONS_FILE, transactions)
+                return
+            
+        raise ValueError(f"Transaction with id '{transaction_id}' not found.")
+    
+
+    def delete_transaction(self, transaction_id: str):
+        """Deletes a transaction from storage."""
+
+        transactions = self.storage.load_data(TRANSACTIONS_FILE)
+
+        for index, transaction in enumerate(transactions):
+            if transaction["id"] == transaction_id:
+               transactions.pop(index)
+               self.storage.save_data(TRANSACTIONS_FILE, transactions)
+               return
+        
+        raise ValueError(f"Transaction with id '{transaction_id}' not found.")    
+    
 
     
     

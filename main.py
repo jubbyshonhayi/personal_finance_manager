@@ -2,7 +2,9 @@ from storage.json_storage import JsonStorage
 from services.transaction_service import TransactionService
 from menus.transaction_menu import (
     add_transaction_menu,
-    view_transactions_menu,                                  
+    view_transactions_menu, 
+    update_transaction_menu,
+    delete_transaction_menu,                           
 ) 
 
 storage = JsonStorage()
@@ -17,30 +19,44 @@ def display_menu():
     print("\n===== Personal Finance Manager =====")
     print("1. Add Transaction")
     print("2. View Transactions")
-    print("3. Exit")
+    print("3. Update Transaction")
+    print("4. Delete transaction")
+    print("5. Exit")
 
 
 def main():
     """Runs the Personal Finance Manager application."""
 
     while True:
-        display_menu()
 
-        choice = input("\nChoose an option: ").strip()
+        try:
+            display_menu()
 
-        if choice == "1":
-            add_transaction_menu(transaction_service, CURRENT_USER_ID)
+            choice = input("\nChoose an option: ").strip()
+
+            if choice == "1":
+                add_transaction_menu(transaction_service, CURRENT_USER_ID)
             
         
-        elif choice == "2":
-            view_transactions_menu(transaction_service, CURRENT_USER_ID)
+            elif choice == "2":
+                view_transactions_menu(transaction_service, CURRENT_USER_ID)
 
-        elif choice == "3":
-            print("\nThank you for using Personal Finance Manager!")
+            elif choice == "3":
+                update_transaction_menu(transaction_service, CURRENT_USER_ID)
+
+            elif choice == "4":
+                delete_transaction_menu(transaction_service, CURRENT_USER_ID)
+
+            elif choice == "5":
+                print("\nThank you for using Personal Finance Manager!")
+                break
+
+            else:
+                print("\nInvalid option. Please try again.")
+
+        except KeyboardInterrupt:
+            print("\nProgramm interrupted. Exiting...\n")
             break
-
-        else:
-            print("\nInvalid option. Please try again.")
 
 
 if __name__ == "__main__":
