@@ -1,0 +1,20 @@
+[
+    {
+        "id": "15c391a5-9548-4a4e-9829-03df0618f521",
+        "user_id": "demo-user",
+        "amount": 30.0,
+        "transaction_type": "Expense",
+        "category": "grocery",
+        "description": "monthly grocery",
+        "date": "2026-07-19T13:57:26.472013"
+    },
+    {
+        "id": "0bb42f9f-d35b-47d7-b106-38427a5d6b90",
+        "user_id": "demo-user",
+        "amount": 60.0,
+        "transaction_type": "Income",
+        "category": "june salary",
+        "description": "salary",
+        "date": "2026-07-19T14:18:58.995396"
+    }
+]
