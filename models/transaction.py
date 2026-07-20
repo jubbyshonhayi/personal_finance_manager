@@ -16,7 +16,7 @@ class Transaction:
     transaction_type: TransactionType
     category: str
     description: str
-    date: datetime
+    date: datetime 
 
 
     def to_dict(self) -> dict:

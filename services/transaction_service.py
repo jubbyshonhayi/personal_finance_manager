@@ -1,6 +1,8 @@
 from models.transaction import Transaction
+from models.financial_summary import FinancialSummary
 from storage.json_storage import JsonStorage
 from utils.constants import TRANSACTIONS_FILE
+from utils.enums import TransactionType
 
 
 class TransactionService:
@@ -62,7 +64,33 @@ class TransactionService:
                self.storage.save_data(TRANSACTIONS_FILE, transactions)
                return
         
-        raise ValueError(f"Transaction with id '{transaction_id}' not found.")    
+        raise ValueError(f"Transaction with id '{transaction_id}' not found.")
+    
+
+    def get_financial_summary(self, user_id: str) -> FinancialSummary:
+        """Calculates and returns the financial summary for the specified user."""
+
+        transactions = self.get_all_transactions()
+
+        total_income = 0
+        total_expense = 0
+        
+        for transaction in transactions:
+
+            if transaction.user_id != user_id:
+                continue
+
+            if transaction.transaction_type == TransactionType.INCOME:
+                total_income += transaction.amount
+
+            else:
+                total_expense += transaction.amount
+
+        return FinancialSummary(
+            total_income=total_income,
+            total_expense=total_expense,
+        )
+
     
 
     

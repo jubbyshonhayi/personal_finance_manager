@@ -285,4 +285,25 @@ def delete_transaction_menu(transaction_service: TransactionService, current_use
             print("Invalid choice. Try again.")
             continue
 
-        
+
+def financial_summary_menu(transaction_service: TransactionService, current_user_id: str):
+    """Displays the financial summary for the current user."""
+
+    summary = transaction_service.get_financial_summary(current_user_id)
+
+    print("\n====== Financial Summary =====\n")
+
+    print(f"Total Income:     ${summary.total_income:.2f}")
+    print(f"Total Expense:    ${summary.total_expense:.2f}")
+    
+    print("-"*50)
+
+    if summary.balance > 0:
+        print(f"Balance:          ${summary.balance:.2f} (Surplus)")
+    
+    elif summary.balance < 0:
+        print(f"Balance:          ${summary.balance:.2f} (Overspending)")
+
+    else:
+        print(f"Balance:          ${summary.balance:.2f} (Break Even)")
+

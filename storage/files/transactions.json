@@ -16,5 +16,23 @@
         "category": "salary",
         "description": "june salary",
         "date": "2026-07-19T21:19:48.099219"
+    },
+    {
+        "id": "434f04a9-53bd-477e-a029-25b1565dbf1e",
+        "user_id": "demo-user",
+        "amount": 30.0,
+        "transaction_type": "Expense",
+        "category": "food",
+        "description": "lunch",
+        "date": "2026-07-20T22:41:37.440323"
+    },
+    {
+        "id": "15477747-7754-44d5-881f-0220c417e9f9",
+        "user_id": "demo-user",
+        "amount": 600.0,
+        "transaction_type": "Expense",
+        "category": "building",
+        "description": "materials for the flat",
+        "date": "2026-07-20T22:42:30.635814"
     }
 ]

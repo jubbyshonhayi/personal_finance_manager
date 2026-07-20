@@ -4,7 +4,8 @@ from menus.transaction_menu import (
     add_transaction_menu,
     view_transactions_menu, 
     update_transaction_menu,
-    delete_transaction_menu,                           
+    delete_transaction_menu,
+    financial_summary_menu,                         
 ) 
 
 storage = JsonStorage()
@@ -21,7 +22,8 @@ def display_menu():
     print("2. View Transactions")
     print("3. Update Transaction")
     print("4. Delete transaction")
-    print("5. Exit")
+    print("5. View Financial Summary")
+    print("6. Exit")
 
 
 def main():
@@ -48,6 +50,9 @@ def main():
                 delete_transaction_menu(transaction_service, CURRENT_USER_ID)
 
             elif choice == "5":
+                financial_summary_menu(transaction_service, CURRENT_USER_ID)
+
+            elif choice == "6":
                 print("\nThank you for using Personal Finance Manager!")
                 break
 
