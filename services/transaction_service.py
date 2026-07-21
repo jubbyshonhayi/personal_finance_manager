@@ -1,5 +1,6 @@
+from datetime import datetime
 from models.transaction import Transaction
-from models.financial_summary import FinancialSummary
+from models.financial_summary import FinancialSummary, FinancialReport
 from storage.json_storage import JsonStorage
 from utils.constants import TRANSACTIONS_FILE
 from utils.enums import TransactionType
@@ -74,11 +75,14 @@ class TransactionService:
 
         total_income = 0
         total_expense = 0
+        transaction_count = 0
         
         for transaction in transactions:
 
             if transaction.user_id != user_id:
                 continue
+
+            transaction_count += 1
 
             if transaction.transaction_type == TransactionType.INCOME:
                 total_income += transaction.amount
@@ -89,7 +93,56 @@ class TransactionService:
         return FinancialSummary(
             total_income=total_income,
             total_expense=total_expense,
+            transaction_count=transaction_count,
         )
+    
+    
+    def get_financial_report(self, user_id: str, year: int, month: int | None=None) -> FinancialReport:
+        """Generates a financial report for the specified period."""
+
+        transactions = self.get_all_transactions()
+
+        total_income = 0
+        total_expense = 0
+        transaction_count = 0
+
+        for transaction in transactions:
+            if transaction.user_id != user_id:
+                continue
+
+            if transaction.date.year != year:
+                continue
+
+            if month is not None and transaction.date.month != month:
+                continue
+
+            transaction_count += 1
+
+            if transaction.transaction_type == TransactionType.INCOME:
+                total_income += transaction.amount
+
+            else:
+                total_expense += transaction.amount
+
+
+        if month is not None:
+            period = datetime(year, month, 1)
+
+        else:
+            period = datetime(year, 1, 1)
+
+        return FinancialReport(
+            total_income=total_income,
+            total_expense=total_expense,
+            period=period,
+            transaction_count=transaction_count,
+        )
+
+
+
+
+
+
 
     
 

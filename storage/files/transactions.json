@@ -29,10 +29,19 @@
     {
         "id": "15477747-7754-44d5-881f-0220c417e9f9",
         "user_id": "demo-user",
-        "amount": 600.0,
+        "amount": 600.79,
         "transaction_type": "Expense",
         "category": "building",
         "description": "materials for the flat",
         "date": "2026-07-20T22:42:30.635814"
+    },
+    {
+        "id": "f9d81359-8a74-42d4-9c08-3deb1cd5c4a9",
+        "user_id": "demo-user",
+        "amount": 50.0,
+        "transaction_type": "Expense",
+        "category": "food",
+        "description": "dinner",
+        "date": "2026-07-21T22:19:48.253118"
     }
 ]

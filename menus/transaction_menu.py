@@ -5,6 +5,10 @@ from models.transaction import Transaction
 from services.transaction_service import TransactionService
 from utils.enums import TransactionType
 from utils.constants import SEPARATOR
+from utils.validators import(
+    get_valid_year,
+    get_valid_month,
+)
 
 
 def add_transaction_menu(transaction_service: TransactionService, current_user_id: str):
@@ -121,7 +125,7 @@ def update_transaction_menu(transaction_service: TransactionService, current_use
     print("\n===== Select Transaction to Update =====")
 
     for index, transaction in enumerate(user_transactions, start=1):
-        print(f"{index}. " f"{transaction.category.title()}   -  " f"${transaction.amount:.2f}")
+        print(f"{index}. " f"{transaction.category.title()}  -  "   f"${transaction.amount:.2f}")
 
     while True:
         try:
@@ -249,6 +253,7 @@ def delete_transaction_menu(transaction_service: TransactionService, current_use
     while True:
         try:
             choice = int(input("\nSelect transaction: "))
+        
 
             if choice < 1 or choice > len(user_transactions):
                 print("Invalid transaction selection.")
@@ -293,17 +298,91 @@ def financial_summary_menu(transaction_service: TransactionService, current_user
 
     print("\n====== Financial Summary =====\n")
 
+    print(f"Transactions:     {summary.transaction_count}")
     print(f"Total Income:     ${summary.total_income:.2f}")
     print(f"Total Expense:    ${summary.total_expense:.2f}")
     
-    print("-"*50)
+    print(SEPARATOR)
 
-    if summary.balance > 0:
-        print(f"Balance:          ${summary.balance:.2f} (Surplus)")
-    
+    if summary.transaction_count == 0:
+        status = "No Transactions"
+        
+    elif summary.balance > 0:
+        status = "Surplus"
+
     elif summary.balance < 0:
-        print(f"Balance:          ${summary.balance:.2f} (Overspending)")
+        status = "Overspending"
 
     else:
-        print(f"Balance:          ${summary.balance:.2f} (Break Even)")
+        status = "Break Even"
+
+    print(f"Balance:          ${summary.balance:.2f} ({status})")
+
+
+    
+def financial_report_menu(transaction_service: TransactionService, current_user_id: str):
+    """Displays a financial report for the selected period."""
+
+    while True:
+        print("\n====== Financial Reports =====")
+        print("1. Monthly Report")
+        print("2. Yearly Report")
+
+        choice = input("\nChoose report: ")
+
+        if choice == "1":
+            
+            year = get_valid_year("Enter year: ")
+
+            month = get_valid_month("Enter Month(1-12): ")
+
+            report = transaction_service.get_financial_report(
+                current_user_id,
+                year,
+                month
+            )
+
+            report_title = report.period.strftime("%B %Y")
+
+            break
+
+        elif choice == "2":
+            
+            year = get_valid_year("Enter Year: ")
+
+            report = transaction_service.get_financial_report(current_user_id, year)
+
+            report_title = report.period.strftime("%Y")
+
+            break
+            
+            
+        else:
+            print("Please choose a valid option.")
+
+
+    print(f"\n===== {report_title} Financial Report ======\n")
+
+    print(f"Transactions:      {report.transaction_count}")
+    print(f"Total Income:      ${report.total_income:.2f}")
+    print(f"Total Expense:     ${report.total_expense:.2f}")
+
+    print(SEPARATOR)
+        
+    if report.transaction_count == 0:
+        status = "No Transactions"
+        
+    elif report.balance > 0:
+        status = "Surplus"
+
+    elif report.balance < 0:
+        status = "Overspending"
+
+    else:
+        status = "Break Even"
+
+    print(f"Balance:           ${report.balance:.2f} ({status})")
+
+
+
 
