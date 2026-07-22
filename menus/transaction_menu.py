@@ -1,6 +1,7 @@
 from datetime import datetime
 import uuid
 
+from menus.menu_helpers import display_transaction_list
 from models.transaction import Transaction
 from services.transaction_service import TransactionService
 from utils.enums import TransactionType
@@ -82,41 +83,15 @@ def add_transaction_menu(transaction_service: TransactionService, current_user_i
 def view_transactions_menu(transaction_service: TransactionService, current_user_id: str):
     """Displays all transactions belonging to the current user."""
 
-    transactions = transaction_service.get_all_transactions()
+    user_transactions = transaction_service.get_user_transactions(current_user_id)
 
-    user_transactions = []
-
-    for transaction in transactions:
-        if transaction.user_id == current_user_id:
-            user_transactions.append(transaction)
-    
-    if not user_transactions:
-        print("\nNo transactions found.")
-        return
-    
-    print("\n===== Your Transactions =====\n")
-    print(f"Total Transactions: {len(user_transactions)}")
-    
-    for index, transaction in enumerate(user_transactions, start=1):
-        print(f"\n{SEPARATOR}")
-        print(f"\nTransaction #{index}")
-        print(f"Type:                   {transaction.transaction_type.value}")
-        print(f"Amount:                 ${transaction.amount:.2f}")
-        print(f"Category:               {transaction.category.title()}")
-        print(f"Description:            {transaction.description.capitalize()}")
-        print(f"Date:                   {transaction.date.strftime('%Y-%m-%d %H:%M')}")
+    display_transaction_list(user_transactions, title="All Transactions")
 
 
 def update_transaction_menu(transaction_service: TransactionService, current_user_id: str):
     """Updates an existing transaction."""
 
-    transactions = transaction_service.get_all_transactions()
-
-    user_transactions = []
-
-    for transaction in transactions:
-        if transaction.user_id == current_user_id:
-            user_transactions.append(transaction)
+    user_transactions = transaction_service.get_user_transactions(current_user_id)
 
     if not user_transactions:
         print("\nNo transactions found.")
@@ -233,13 +208,7 @@ def update_transaction_menu(transaction_service: TransactionService, current_use
 def delete_transaction_menu(transaction_service: TransactionService, current_user_id: str):
     """Deletes a selected transaction."""
 
-    transactions = transaction_service.get_all_transactions()
-
-    user_transactions = []
-
-    for transaction in transactions:
-        if transaction.user_id == current_user_id:
-            user_transactions.append(transaction)
+    user_transactions = transaction_service.get_user_transactions(current_user_id)
 
     if not user_transactions:
         print("\nNo transactions found.")
@@ -275,15 +244,15 @@ def delete_transaction_menu(transaction_service: TransactionService, current_use
     
     while True:
 
-        choice = input("\nAre you sure you want to delete this transaction(Y/N)? ").strip().upper()
+        confirmation = input("\nAre you sure you want to delete this transaction(Y/N)? ").strip().upper()
 
-        if choice == "Y":
+        if confirmation == "Y":
             transaction_service.delete_transaction(selected_transaction.id)
             print("\nTransaction deleted successfully!")
             return
 
-        elif choice == "N":
-            print("Deletion cancelled.")
+        elif confirmation == "N":
+            print("\nDeletion cancelled.")
             return
 
         else:
@@ -384,5 +353,51 @@ def financial_report_menu(transaction_service: TransactionService, current_user_
     print(f"Balance:           ${report.balance:.2f} ({status})")
 
 
+def search_transactions_menu(transaction_service: TransactionService, current_user_id: str):
+    """Searches transactions using different criteria."""
 
+    while True:
+        print("\n====== Search Transactions ======")
+        print("1. Category")
+        print("2. Description")
+        print("3. Transaction Type")
+        print("4. Year")
+        print("5. Month")
+        print("6. Back")
 
+        choice = input("\nChoose search option: ")
+
+        if choice == "1":
+            field = "category"
+            value = input("Enter category: ")
+
+        elif choice == "2":
+            field = "description"
+            value = input("Enter description: ")
+
+        elif choice == "3":
+            field = "transaction_type"
+            value = input("Enter transaction type (Income/Expense): ")
+
+        elif choice == "4":
+            field = "year"
+            value = get_valid_year("Enter year: ")
+
+        elif choice == "5":
+            field = "month"
+            value = get_valid_month("Enter month (1-12): ")
+
+        elif choice == "6":
+            break
+
+        else:
+            print("Please choose a valid option.")
+            continue
+
+        results = transaction_service.search_transactions(current_user_id, field, value)
+
+        display_transaction_list(
+            results,
+            title="Search Results",
+            empty_message="No matching transactions found."
+        )

@@ -1,6 +1,7 @@
 from datetime import datetime
 from models.transaction import Transaction
 from models.financial_summary import FinancialSummary, FinancialReport
+import pandas as pd
 from storage.json_storage import JsonStorage
 from utils.constants import TRANSACTIONS_FILE
 from utils.enums import TransactionType
@@ -38,6 +39,22 @@ class TransactionService:
             transactions.append(Transaction.from_dict(transaction_data))
             
         return transactions
+
+
+    def get_user_transactions(self, user_id: str) -> list[Transaction]:
+        """
+        Returns all transactions belonging to the specified user.
+        """
+
+        transactions = self.get_all_transactions()
+
+        user_transactions = []
+
+        for transaction in transactions:
+            if transaction.user_id == user_id:
+                user_transactions.append(transaction)
+
+        return user_transactions
     
 
     def update_transaction(self, transaction_id: str, updated_transaction: Transaction):
@@ -137,6 +154,47 @@ class TransactionService:
             period=period,
             transaction_count=transaction_count,
         )
+
+    
+    def search_transactions(self, user_id: str, field: str, value) -> list[Transaction]:
+        """Searches transactions using the specified field and value."""
+
+        transactions = self.get_all_transactions()
+
+        transactions_data  = []
+
+        for transaction in transactions:
+            transactions_data.append(transaction.to_dict())
+
+        df = pd.DataFrame(transactions_data)
+
+        # Keep only the current user's transactions.
+        df = df[df["user_id"] == user_id]
+
+        df["date_time"] = pd.to_datetime(df["date"])
+
+        df["year"] = df["date_time"].dt.year
+        df["month"] = df["date_time"].dt.month
+
+        if field in ("category", "description", "transaction_type"):
+            filtered_df = df[df[field].str.lower() == value.lower()]
+
+        else:
+            filtered_df = df[df[field] == value]
+
+        filtered_df = filtered_df.drop(columns=["date_time", "year", "month"])
+
+        filtered_transactions = []
+
+        for transaction in filtered_df.to_dict(orient="records"):
+            filtered_transactions.append(Transaction.from_dict(transaction))
+
+        return filtered_transactions
+
+    
+
+        
+        
 
 
 

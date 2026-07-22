@@ -1,14 +1,5 @@
 [
     {
-        "id": "cff37510-8496-4424-8f8a-2afa4436dee4",
-        "user_id": "demo-user",
-        "amount": 30.0,
-        "transaction_type": "Income",
-        "category": "food",
-        "description": "dinner",
-        "date": "2026-07-19T21:19:06.958708"
-    },
-    {
         "id": "20aa6e3e-5d1c-48a6-b258-e493d8842ab0",
         "user_id": "demo-user",
         "amount": 500.0,
@@ -43,5 +34,14 @@
         "category": "food",
         "description": "dinner",
         "date": "2026-07-21T22:19:48.253118"
+    },
+    {
+        "id": "76980e13-9bd2-40b0-ac73-f4945af94d7a",
+        "user_id": "demo-user",
+        "amount": 200.0,
+        "transaction_type": "Income",
+        "category": "chimbazo",
+        "description": "loan return from a friend",
+        "date": "2026-07-21T23:09:10.061310"
     }
 ]
