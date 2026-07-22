@@ -4,6 +4,14 @@ from utils.constants import SEPARATOR
 CATEGORY_WIDTH = 20
 AMOUNT_WIDTH = 10
 
+TRANSACTIONS_PER_PAGE = 10
+
+def pause(message: str = "\nPress Enter to continue..."):
+    """Pauses the program until the user presses Enter."""
+
+    input(message)
+
+
 def display_transaction_list(
     transactions: list[Transaction],
     title: str = "Transactions",
@@ -21,18 +29,30 @@ def display_transaction_list(
     if not transactions:
         print(f"\n{empty_message}")
         return
-
+    
+     
     print(f"\n====== {title} ======\n")
     print(f"Transactions:  {len(transactions)}\n")
 
-    for transaction in transactions:
-        print(f"Date:          {transaction.date.strftime('%d %b %Y')}")
-        print(f"Type:          {transaction.transaction_type.value}")
-        print(f"Category:      {transaction.category}")
-        print(f"Amount:        ${transaction.amount:.2f}")
-        print(f"Description:   {transaction.description}")
+    for start in range(0, len(transactions), TRANSACTIONS_PER_PAGE):
+        end = start + TRANSACTIONS_PER_PAGE
+        page = transactions[start:end]
 
-        print(SEPARATOR)
+        for index, transaction in enumerate(page, start=start + 1):
+
+            print(f"Transaction #{index}")
+            print(f"Type:          {transaction.transaction_type.value}")
+            print(f"Amount:        ${transaction.amount:.2f}")
+            print(f"Category:      {transaction.category.title()}")
+            print(f"Description:   {transaction.description.capitalize()}")
+            print(f"Date:          {transaction.date.strftime('%d %b %Y')}")
+
+            print(SEPARATOR)
+
+        if end < len(transactions):
+            pause("\nPress Enter for next page...")
+        else:
+            pause("\nEnd of results. Press Enter to continue...")
 
 
 def display_transaction(

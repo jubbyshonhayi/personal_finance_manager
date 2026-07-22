@@ -168,6 +168,9 @@ class TransactionService:
 
         df = pd.DataFrame(transactions_data)
 
+        if df.empty:
+            return []
+
         # Keep only the current user's transactions.
         df = df[df["user_id"] == user_id]
 
@@ -191,6 +194,63 @@ class TransactionService:
 
         return filtered_transactions
 
+
+
+    def filter_transactions(self, user_id: str, filter_type: str, value) -> list[Transaction]:
+        """Filters transactions using the specified condition."""
+
+        transactions = self.get_user_transactions(user_id)
+
+        transactions_data = []
+
+        for transaction in transactions:
+            transactions_data.append(transaction.to_dict())
+
+        df = pd.DataFrame(transactions_data)
+
+        if df.empty:
+            return []
+
+        if filter_type == "transaction_type":
+            filtered_df = df[df["transaction_type"] == value.value]
+
+
+        elif filter_type == "date_range":
+
+            start_date, end_date = value
+
+            df["filter_date"] = pd.to_datetime(df["date"]).dt.date
+
+            start_date = start_date.date()
+            end_date = end_date.date()
+
+            filtered_df = df[
+                (df["filter_date"] >= start_date) &
+                (df["filter_date"] <= end_date)
+            ]
+
+            filtered_df = filtered_df.drop(columns=["filter_date"])
+
+        elif filter_type == "amount_range":
+            minimum, maximum = value
+        
+            filtered_df = df[
+                (df["amount"] >= minimum) &
+                (df["amount"] <= maximum)
+            ]
+        
+        else:
+            raise ValueError(f"Unsupported filter type: {filter_type}")
+
+        filtered_transactions = []
+
+        for transaction in filtered_df.to_dict(orient="records"):
+            filtered_transactions.append(Transaction.from_dict(transaction))
+
+        return filtered_transactions
+
+
+    
     
 
         

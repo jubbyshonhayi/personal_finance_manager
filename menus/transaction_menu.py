@@ -4,7 +4,8 @@ import uuid
 from menus.menu_helpers import(
     display_transaction_list,
     display_transaction,
-    display_transaction_options
+    display_transaction_options,
+    pause
 )
 from models.transaction import Transaction
 from services.transaction_service import TransactionService
@@ -81,7 +82,7 @@ def add_transaction_menu(transaction_service: TransactionService, current_user_i
 
     transaction_service.add_transaction(transaction)
 
-    print("\nTransaction added successfully!")
+    print("\nTransaction added successfully!")    
 
 
 def view_transactions_menu(transaction_service: TransactionService, current_user_id: str):
@@ -90,7 +91,7 @@ def view_transactions_menu(transaction_service: TransactionService, current_user
     user_transactions = transaction_service.get_user_transactions(current_user_id)
 
     display_transaction_list(user_transactions, title="All Transactions")
-
+    
 
 def update_transaction_menu(transaction_service: TransactionService, current_user_id: str):
     """Updates an existing transaction."""
@@ -313,7 +314,6 @@ def financial_report_menu(transaction_service: TransactionService, current_user_
 
             break
             
-            
         else:
             print("Please choose a valid option.")
 
@@ -340,7 +340,7 @@ def financial_report_menu(transaction_service: TransactionService, current_user_
 
     print(f"Balance:           ${report.balance:.2f} ({status})")
 
-
+    
 def search_transactions_menu(transaction_service: TransactionService, current_user_id: str):
     """Searches transactions using different criteria."""
 
@@ -376,7 +376,7 @@ def search_transactions_menu(transaction_service: TransactionService, current_us
             value = get_valid_month("Enter month (1-12): ")
 
         elif choice == "6":
-            break
+            return
 
         else:
             print("Please choose a valid option.")
@@ -389,3 +389,116 @@ def search_transactions_menu(transaction_service: TransactionService, current_us
             title="Search Results",
             empty_message="No matching transactions found."
         )
+        
+
+def filter_transactions_menu(transaction_service: TransactionService, current_user_id: str):
+    """Filters transactions based on user-selected criteria."""
+
+    while True:
+        print("\n====== Filter Transactions ======")
+        print("1. Income Transactions")
+        print("2. Expense Transactions")
+        print("3. Date Range")
+        print("4. Amount Range")
+        print("5. Back")
+
+        choice = input("\nChoose filter: ").strip()
+
+        if choice == "1":
+            results = transaction_service.filter_transactions(
+                current_user_id,
+                "transaction_type",
+                TransactionType.INCOME,
+            )
+
+            display_transaction_list(
+                results,
+                title="Income Transactions",
+            )
+            
+
+        elif choice == "2":
+            results = transaction_service.filter_transactions(
+                current_user_id,
+                "transaction_type",
+                TransactionType.EXPENSE,
+            )
+
+            display_transaction_list(
+                results,
+                title="Expense Transactions",
+            )
+            
+
+        elif choice == "3":
+
+            while True:
+
+                try:
+                    start_date = datetime.strptime(
+                        input("Start date (YYYY-MM-DD): ").strip(),
+                        "%Y-%m-%d"
+                    )
+
+                    end_date = datetime.strptime(
+                        input("End date (YYYY-MM-DD): ").strip(),
+                        "%Y-%m-%d"
+                    )
+
+                    if start_date > end_date:
+                        print("Start date cannot be after end date.")
+                        continue
+
+                    break
+
+                except ValueError:
+                    print("Please enter dates in YYYY-MM-DD format.")
+
+            results = transaction_service.filter_transactions(
+                current_user_id,
+                "date_range",
+                (start_date, end_date),
+            )
+
+            display_transaction_list(
+                results,
+                title=f"Transactions ({start_date:%Y-%m-%d} to {end_date:%Y-%m-%d})",
+            )
+   
+        elif choice == "4":
+
+            while True:
+                try:
+                    minimum_amount = float(input("Minimum amount: "))
+                    maximum_amount = float(input("Maximum amount: "))
+
+                    if minimum_amount < 0 or maximum_amount < 0:
+                        print("Amounts cannot be negative.")
+                        continue
+
+                    if minimum_amount > maximum_amount:
+                        print("Minimum amount cannot be greater than maximum amount.")
+                        continue
+
+                    break
+
+                except ValueError:
+                    print("Please enter valid amounts.")
+
+            results = transaction_service.filter_transactions(
+                current_user_id,
+                "amount_range",
+                (minimum_amount, maximum_amount),
+            )
+
+            display_transaction_list(
+                results,
+                title=f"Transactions (${minimum_amount:.2f} - ${maximum_amount:.2f})",
+            )
+            
+
+        elif choice == "5":
+            return
+
+        else:
+            print("Please choose a valid option.")

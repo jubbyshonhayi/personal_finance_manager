@@ -7,7 +7,8 @@ from menus.transaction_menu import (
     delete_transaction_menu,
     financial_summary_menu,
     financial_report_menu,
-    search_transactions_menu,                       
+    search_transactions_menu,  
+    filter_transactions_menu                    
 ) 
 
 storage = JsonStorage()
@@ -25,8 +26,9 @@ def display_menu():
     print("3. Update Transaction")
     print("4. Delete Transaction")
     print("5. Search Transactions")
-    print("6. View Financial Summary")
-    print("7. View Financial Reports")
+    print("6. Filter Transactions")
+    print("7. View Financial Summary")
+    print("8. View Financial Reports")
     print("0. Exit")
 
 
@@ -54,12 +56,15 @@ def main():
                 delete_transaction_menu(transaction_service, CURRENT_USER_ID)
 
             elif choice == "5":
-                search_transactions_menu(transaction_service, CURRENT_USER_ID)   
+                search_transactions_menu(transaction_service, CURRENT_USER_ID)
 
             elif choice == "6":
-                financial_summary_menu(transaction_service, CURRENT_USER_ID)
+                filter_transactions_menu(transaction_service, CURRENT_USER_ID)
 
             elif choice == "7":
+                financial_summary_menu(transaction_service, CURRENT_USER_ID)
+
+            elif choice == "8":
                 financial_report_menu(transaction_service, CURRENT_USER_ID)
 
 
@@ -69,11 +74,11 @@ def main():
 
             else:
                 print("\nInvalid option. Please try again.")
-
+            
         except KeyboardInterrupt:
             print("\nProgramm interrupted. Exiting...\n")
             break
 
-
+     
 if __name__ == "__main__":
     main()
