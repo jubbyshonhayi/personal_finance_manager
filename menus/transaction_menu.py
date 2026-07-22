@@ -1,7 +1,11 @@
 from datetime import datetime
 import uuid
 
-from menus.menu_helpers import display_transaction_list
+from menus.menu_helpers import(
+    display_transaction_list,
+    display_transaction,
+    display_transaction_options
+)
 from models.transaction import Transaction
 from services.transaction_service import TransactionService
 from utils.enums import TransactionType
@@ -97,10 +101,7 @@ def update_transaction_menu(transaction_service: TransactionService, current_use
         print("\nNo transactions found.")
         return
 
-    print("\n===== Select Transaction to Update =====")
-
-    for index, transaction in enumerate(user_transactions, start=1):
-        print(f"{index}. " f"{transaction.category.title()}  -  "   f"${transaction.amount:.2f}")
+    display_transaction_options(user_transactions, title="Select Transaction to Update")
 
     while True:
         try:
@@ -117,13 +118,8 @@ def update_transaction_menu(transaction_service: TransactionService, current_use
 
     selected_transaction = user_transactions[choice - 1]
 
-    print("\n===== Current Transaction =====")
-    print(f"Type:                {selected_transaction.transaction_type.value}")
-    print(f"Amount:              ${selected_transaction.amount:.2f}")
-    print(f"Category:            {selected_transaction.category.title()}")
-    print(f"Description:         {selected_transaction.description.capitalize()}")
-    print(f"Date:                {selected_transaction.date.strftime('%Y-%m-%d %H:%M')}")
-
+    display_transaction(selected_transaction, title="Selected Transaction")
+    
     while True:
         print("\n===== Update Options =====")
         print("1. Amount")
@@ -214,10 +210,7 @@ def delete_transaction_menu(transaction_service: TransactionService, current_use
         print("\nNo transactions found.")
         return
 
-    print("\n===== Select Transaction to Delete =====")
-
-    for index, transaction in enumerate(user_transactions, start=1):
-        print(f"{index}. " f"{transaction.category.title()}   -  " f"${transaction.amount:.2f}")
+    display_transaction_options(user_transactions, title="Select Transaction to Delete")
     
     while True:
         try:
@@ -235,13 +228,8 @@ def delete_transaction_menu(transaction_service: TransactionService, current_use
 
     selected_transaction = user_transactions[choice - 1]
 
-    print("\n===== Selected Transaction =====")
-    print(f"Type:                {selected_transaction.transaction_type.value}")
-    print(f"Amount:              ${selected_transaction.amount:.2f}")
-    print(f"Category:            {selected_transaction.category.title()}")
-    print(f"Description:         {selected_transaction.description.capitalize()}")
-    print(f"Date:                {selected_transaction.date.strftime('%Y-%m-%d %H:%M')}")
-    
+    display_transaction(selected_transaction, title="Selected Transaction")
+
     while True:
 
         confirmation = input("\nAre you sure you want to delete this transaction(Y/N)? ").strip().upper()

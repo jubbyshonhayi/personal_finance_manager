@@ -24,7 +24,7 @@ def display_menu():
     print("2. View Transactions")
     print("3. Update Transaction")
     print("4. Delete Transaction")
-    print("5. Search Transaction")
+    print("5. Search Transactions")
     print("6. View Financial Summary")
     print("7. View Financial Reports")
     print("0. Exit")

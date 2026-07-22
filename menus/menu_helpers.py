@@ -1,6 +1,8 @@
 from models.transaction import Transaction
 from utils.constants import SEPARATOR
 
+CATEGORY_WIDTH = 20
+AMOUNT_WIDTH = 10
 
 def display_transaction_list(
     transactions: list[Transaction],
@@ -31,3 +33,44 @@ def display_transaction_list(
         print(f"Description:   {transaction.description}")
 
         print(SEPARATOR)
+
+
+def display_transaction(
+    transaction: Transaction,
+    title: str = "Transaction",
+):
+    """
+    Displays a formatted transaction.
+    """
+
+    print(f"\n===== {title} =====\n")
+
+    print(f"ID:            {transaction.id}")
+    print(f"Type:          {transaction.transaction_type.value}")
+    print(f"Amount:        ${transaction.amount:.2f}")
+    print(f"Category:      {transaction.category.title()}")
+    print(f"Description:   {transaction.description.capitalize()}")
+    print(f"Date:          {transaction.date.strftime('%Y-%m-%d %H:%M')}")
+
+    print(SEPARATOR)
+
+
+def display_transaction_options(
+    transactions: list[Transaction],
+    title: str = "Select Transaction",
+):
+    """
+    Displays a numbered list of transactions for user selection.
+    """
+
+    print(f"\n===== {title} =====\n")
+
+    for index, transaction in enumerate(transactions, start=1):
+        print(
+            f"{index:>2}. "
+            f"{transaction.category.title():<{CATEGORY_WIDTH}}"
+            f"${transaction.amount:>{AMOUNT_WIDTH}.2f}   "
+            f"{transaction.date.strftime('%d %b %Y')}"
+        )
+
+    print(SEPARATOR)

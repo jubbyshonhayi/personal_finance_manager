@@ -2,7 +2,7 @@
     {
         "id": "20aa6e3e-5d1c-48a6-b258-e493d8842ab0",
         "user_id": "demo-user",
-        "amount": 500.0,
+        "amount": 550.0,
         "transaction_type": "Income",
         "category": "salary",
         "description": "june salary",
