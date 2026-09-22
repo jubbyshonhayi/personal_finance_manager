@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
+from uuid import UUID
 
 @dataclass
 class User:
@@ -8,20 +9,9 @@ class User:
     
     This model stores the user's profile information and preferences.
     """
-    id: str
-    name: str
+    id: UUID
+    username: str
     email: str
-    password: str
-    currency: str
+    password_hash: str
     date_joined: datetime
-
-    def to_dict(self):
-        """Converts a User object into a dictionary."""
-        pass
-    
-    @classmethod
-    def from_dict(cls, data):
-        """Creates a User object from a dictionary."""
-        pass
-    
 

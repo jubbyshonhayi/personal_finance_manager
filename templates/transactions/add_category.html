@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Add Category | Personal Finance Manager
+{% endblock %}
+
+{% block head %}
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/transactions.css') }}"
+    >
+{% endblock %}
+
+{% block content %}
+    <div class="transaction-page">
+        <section class="transaction-form">
+            <header class="page-header">
+                <h1>Add Category</h1>
+
+                <p>
+                    Create a category for your income or expenses.
+                </p>
+            </header>
+
+            <form method="POST">
+                <!-- Protects the form against cross-site request forgery. -->
+                <input
+                    type="hidden"
+                    name="csrf_token"
+                    value="{{ csrf_token() }}"
+                >
+
+                <div class="form-group">
+                    <label for="category_name">
+                        Category Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="category_name"
+                        name="category_name"
+                        maxlength="100"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="transaction_type">
+                        Type
+                    </label>
+
+                    <select
+                        id="transaction_type"
+                        name="transaction_type"
+                        required
+                    >
+                        <option value="Income">
+                            Income
+                        </option>
+
+                        <option value="Expense">
+                            Expense
+                        </option>
+                    </select>
+                </div>
+
+                <button
+                    type="submit"
+                    class="button button-primary"
+                >
+                    Create Category
+                </button>
+            </form>
+
+            <a
+                class="back-link"
+                href="{{ url_for('transaction.add_transaction') }}"
+            >
+                Back to Add Transaction
+            </a>
+        </section>
+    </div>
+{% endblock %}

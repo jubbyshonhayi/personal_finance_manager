@@ -1,32 +1,44 @@
 from dataclasses import dataclass
-from datetime import datetime
+from decimal import Decimal
+from datetime import date
+from uuid import UUID
+
+from utils.enums import TransactionType
+
 
 @dataclass(frozen=True)
 class FinancialSummary:
     """
-    Represents a user's financial summary.
-
-    Stores the total income and total expenses while providing
-    the current balance as a calculated property.
+    Represents a calculated financial summary for a specific currency.
     """
-
-    total_income: float
-    total_expense: float
+    currency: str
+    total_income: Decimal
+    total_expense: Decimal
     transaction_count: int
-    
-    @property
-    def balance(self) -> float:
-        return self.total_income - self.total_expense
-    
+
 
 @dataclass(frozen=True)
-class FinancialReport(FinancialSummary):
+class CategoryBreakdown:
     """
-    Represents a financial report for a specific period.
-
-    Extends the financial summary by including the reporting
-    period and the total number of transactions.
+    Represents financial activity for a specific category.
     """
+    category_id: UUID
+    category_name: str
+    transaction_type: TransactionType
+    total_amount: Decimal
+    transaction_count: int
 
-    period: datetime
-    
+
+@dataclass(frozen=True)
+class FinancialReport:
+    """
+    Represents a calculated financial report for a specific
+    date range and currency.
+    """
+    currency: str
+    start_date: date
+    end_date: date
+    total_income: Decimal
+    total_expense: Decimal
+    transaction_count: int
+    category_breakdowns: tuple[CategoryBreakdown, ...]

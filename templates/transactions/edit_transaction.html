@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Edit Transaction | Personal Finance Manager
+{% endblock %}
+
+{% block head %}
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/transactions.css') }}"
+    >
+{% endblock %}
+
+{% block content %}
+    <div class="transaction-page">
+        <section class="transaction-form">
+            <header class="page-header">
+                <h1>Edit Transaction</h1>
+
+                <p>
+                    Update the details of this transaction.
+                </p>
+            </header>
+
+            <form method="POST">
+                <input
+                    type="hidden"
+                    name="csrf_token"
+                    value="{{ csrf_token() }}"
+                >
+
+                <div class="form-group">
+                    <label for="amount">
+                        Amount
+                    </label>
+
+                    <input
+                        type="number"
+                        id="amount"
+                        name="amount"
+                        step="0.01"
+                        min="0.01"
+                        value="{{ transaction.amount }}"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="currency">
+                        Currency
+                    </label>
+
+                    <select
+                        id="currency"
+                        name="currency"
+                        required
+                    >
+                        <option value="" disabled>
+                            Select currency
+                        </option>
+
+                        {% for code, currency in currencies.items() %}
+                            <option
+                                value="{{ code }}"
+                                {% if code == transaction.currency %}
+                                    selected
+                                {% endif %}
+                            >
+                                {{ code }} - {{ currency.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="transaction_type">
+                        Type
+                    </label>
+
+                    <select
+                        id="transaction_type"
+                        name="transaction_type"
+                        required
+                    >
+                        <option
+                            value="Income"
+                            {% if transaction.transaction_type.value == "Income" %}
+                                selected
+                            {% endif %}
+                        >
+                            Income
+                        </option>
+
+                        <option
+                            value="Expense"
+                            {% if transaction.transaction_type.value == "Expense" %}
+                                selected
+                            {% endif %}
+                        >
+                            Expense
+                        </option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="category_id">
+                        Category
+                    </label>
+
+                    <select
+                        id="category_id"
+                        name="category_id"
+                        required
+                    >
+                        {% for category in categories %}
+                            <option
+                                value="{{ category.id }}"
+                                data-type="{{ category.transaction_type.value if category.transaction_type else 'Both' }}"
+                                {% if category.id == transaction.category_id %}
+                                    selected
+                                {% endif %}
+                            >
+                                {{ category.category_name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+
+                    <a
+                        class="secondary-link"
+                        href="{{ url_for('transaction.add_category') }}"
+                    >
+                        Create a new category
+                    </a>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">
+                        Description
+                    </label>
+
+                    <textarea
+                        id="description"
+                        name="description"
+                        rows="4"
+                        maxlength="500"
+                        placeholder="Add a note about this transaction (optional)"
+                    >{{ transaction.description or "" }}</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="transaction_date">
+                        Date
+                    </label>
+
+                    <input
+                        type="date"
+                        id="transaction_date"
+                        name="transaction_date"
+                        value="{{ transaction.transaction_date }}"
+                        required
+                    >
+                </div>
+
+                <button
+                    type="submit"
+                    class="button button-primary"
+                >
+                    Save Changes
+                </button>
+            </form>
+
+            <a
+                class="back-link"
+                href="{{ url_for('dashboard.dashboard_page') }}"
+            >
+                Cancel
+            </a>
+        </section>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/transactions.js') }}"></script>
+{% endblock %}

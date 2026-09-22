@@ -1,0 +1,4 @@
+psycopg[binary,pool]
+python-dotenv
+Flask-WTF
+brevo-python==5.0.2

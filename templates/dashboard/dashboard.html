@@ -1,0 +1,342 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Dashboard | Personal Finance Manager
+{% endblock %}
+
+{% block head %}
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/dashboard.css') }}"
+    >
+{% endblock %}
+
+{% block content %}
+
+    <div class="page-header">
+
+        <div>
+            <h1>Financial Overview</h1>
+
+            {% if selected_currency %}
+                <p>
+                    Your financial activity in
+                    <strong>{{ selected_currency }}</strong>
+                </p>
+            {% else %}
+                <p>
+                    Start by adding your first transaction.
+                </p>
+            {% endif %}
+        </div>
+
+        {% if currencies %}
+            <form
+                method="GET"
+                action="{{ url_for('dashboard.dashboard_page') }}"
+                class="currency-selector"
+            >
+                <label for="currency">
+                    Currency
+                </label>
+
+                <select
+                    id="currency"
+                    name="currency"
+                >
+                    {% for currency in currencies %}
+                        <option
+                            value="{{ currency }}"
+                            {% if currency == selected_currency %}
+                                selected
+                            {% endif %}
+                        >
+                            {{ currency }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </form>
+        {% endif %}
+
+    </div>
+
+
+    {% if summary %}
+
+        <section class="summary-cards">
+
+            <div class="summary-card">
+                <div class="card-label">
+                    Total Income
+                </div>
+
+                <div class="card-value income">
+                    {{ summary.total_income }}
+                    {{ summary.currency }}
+                </div>
+            </div>
+
+            <div class="summary-card">
+                <div class="card-label">
+                    Total Expenses
+                </div>
+
+                <div class="card-value expense">
+                    {{ summary.total_expense }}
+                    {{ summary.currency }}
+                </div>
+            </div>
+
+            <div class="summary-card">
+                <div class="card-label">
+                    Net
+                </div>
+
+                <div
+                    class="
+                        card-value
+                        {% if net_amount >= 0 %}
+                            positive
+                        {% else %}
+                            negative
+                        {% endif %}
+                    "
+                >
+                    {{ net_amount }}
+                    {{ summary.currency }}
+                </div>
+            </div>
+
+        </section>
+
+
+        <section class="analytics-grid">
+
+            <div class="dashboard-card">
+
+                <div class="section-heading">
+                    <div>
+                        <h2>Spending by Category</h2>
+
+                        <p>
+                            How you're spending your money.
+                        </p>
+                    </div>
+                </div>
+
+
+                {% if category_breakdown %}
+
+                    {% set highest_category = category_breakdown[0].total_amount %}
+
+                    <div class="category-list">
+
+                        {% for category in category_breakdown %}
+
+                            <div class="category-row">
+
+                                <div class="category-header">
+
+                                    <span class="category-name">
+                                        {{ category.category_name }}
+                                    </span>
+
+                                    <span class="category-amount">
+                                        {{ category.total_amount }}
+                                        {{ selected_currency }}
+                                    </span>
+
+                                </div>
+
+
+                                <progress
+                                    class="category-progress"
+                                    value="{{ category.total_amount }}"
+                                    max="{{ highest_category }}"
+                                    aria-label="{{ category.category_name }} spending"
+                                ></progress>
+
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                {% else %}
+
+                    <div class="empty-state">
+                        No expenses recorded in
+                        {{ selected_currency }} yet.
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+
+            <div class="dashboard-card">
+
+                <div class="section-heading">
+                    <div>
+                        <h2>Financial Insight</h2>
+
+                        <p>
+                            A quick look at your spending.
+                        </p>
+                    </div>
+                </div>
+
+
+                {% if category_breakdown %}
+
+                    {% set top_category = category_breakdown[0] %}
+
+                    <div class="insight">
+
+                        <div class="insight-label">
+                            Largest expense category
+                        </div>
+
+                        <div class="insight-value">
+                            {{ top_category.category_name }}
+                        </div>
+
+                        <p>
+                            You spent
+                            <strong>
+                                {{ top_category.total_amount }}
+                                {{ selected_currency }}
+                            </strong>
+                            on
+                            <strong>
+                                {{ top_category.category_name }}
+                            </strong>
+                            across
+                            {{ top_category.transaction_count }}
+                            transaction{% if top_category.transaction_count != 1 %}s{% endif %}.
+                        </p>
+
+                    </div>
+
+                {% else %}
+
+                    <div class="empty-state">
+                        Add some expense transactions to see
+                        financial insights here.
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+        </section>
+
+    {% endif %}
+
+
+    <section class="transactions-card">
+
+        <div class="transactions-header">
+
+            <div>
+                <h2>Recent Transactions</h2>
+
+                <p>
+                    Your five most recent transactions.
+                </p>
+            </div>
+
+            <a
+                class="view-all"
+                href="{{ url_for('transaction.transactions_page') }}"
+            >
+                View All Transactions
+            </a>
+
+        </div>
+
+
+        {% if recent_transactions %}
+
+            <div class="transaction-list">
+
+                {% for transaction in recent_transactions %}
+
+                    <article class="transaction">
+
+                        <div class="transaction-main">
+
+                            <div class="transaction-description">
+                                {{
+                                    transaction.description
+                                    or transaction.category_name
+                                }}
+                            </div>
+
+                            <div class="transaction-category">
+                                {{ transaction.category_name }}
+                                ·
+                                {{ transaction.transaction_type.value }}
+                            </div>
+
+                        </div>
+
+
+                        <div class="transaction-date">
+                            {{ transaction.transaction_date }}
+                        </div>
+
+
+                        <div
+                            class="
+                                transaction-amount
+                                {% if transaction.transaction_type.value == 'Income' %}
+                                    income
+                                {% else %}
+                                    expense
+                                {% endif %}
+                            "
+                        >
+                            {% if transaction.transaction_type.value == 'Income' %}
+                                +
+                            {% else %}
+                                -
+                            {% endif %}
+
+                            {{ transaction.amount }}
+                            {{ transaction.currency }}
+                        </div>
+
+                    </article>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-state">
+
+                <p>
+                    You don't have any transactions yet.
+                </p>
+
+                <a
+                    class="button button-primary"
+                    href="{{ url_for('transaction.add_transaction') }}"
+                >
+                    Add Your First Transaction
+                </a>
+
+            </div>
+
+        {% endif %}
+
+    </section>
+
+{% endblock %}
+
+
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

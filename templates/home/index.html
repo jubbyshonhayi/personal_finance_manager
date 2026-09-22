@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Personal Finance Manager
+{% endblock %}
+
+{% block head %}
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/home.css') }}"
+    >
+{% endblock %}
+
+{% block content %}
+    <div class="home-page">
+
+        <section class="hero-section">
+            <div class="hero-content">
+
+                <p class="hero-label">
+                    PERSONAL FINANCE MANAGER
+                </p>
+
+                <h1>
+                    Understand your money.
+                    <span>Make better decisions.</span>
+                </h1>
+
+                <p class="hero-description">
+                    Track your income and expenses, understand your
+                    spending patterns, and turn your financial activity
+                    into useful insights.
+                </p>
+
+                <div class="hero-actions">
+                    <a
+                        class="button button-primary"
+                        href="{{ url_for('auth.register') }}"
+                    >
+                        Create Account
+                    </a>
+
+                    <a
+                        class="button button-secondary"
+                        href="{{ url_for('auth.login') }}"
+                    >
+                        Log In
+                    </a>
+                </div>
+
+            </div>
+        </section>
+
+        <section class="features-section">
+
+            <div class="section-header">
+
+                <p class="section-label">
+                    BUILT FOR YOUR FINANCIAL JOURNEY
+                </p>
+
+                <h2>
+                    More than a place to record transactions.
+                </h2>
+
+                <p>
+                    Keep your financial activity organized and turn
+                    the numbers into something you can actually use.
+                </p>
+
+            </div>
+
+            <div class="feature-grid">
+
+                <article class="feature-card">
+                    <h3>
+                        Track your money
+                    </h3>
+
+                    <p>
+                        Record income and expenses with categories,
+                        currencies, dates, and descriptions so your
+                        financial history stays organized.
+                    </p>
+                </article>
+
+                <article class="feature-card">
+                    <h3>
+                        Understand your spending
+                    </h3>
+
+                    <p>
+                        See how your expenses are distributed across
+                        categories and identify the areas consuming
+                        the most of your money.
+                    </p>
+                </article>
+
+                <article class="feature-card">
+                    <h3>
+                        Turn data into insight
+                    </h3>
+
+                    <p>
+                        Use financial summaries and analytics to
+                        understand patterns in your income, expenses,
+                        and overall financial activity.
+                    </p>
+                </article>
+
+            </div>
+
+        </section>
+
+        <section class="cta-section">
+
+            <div class="cta-content">
+
+                <h2>
+                    Start building a clearer picture of your finances.
+                </h2>
+
+                <p>
+                    Create your account and start recording your
+                    financial activity.
+                </p>
+
+                <a
+                    class="button button-primary"
+                    href="{{ url_for('auth.register') }}"
+                >
+                    Get Started
+                </a>
+
+            </div>
+
+        </section>
+
+    </div>
+{% endblock %}

@@ -1,271 +1,433 @@
-from datetime import datetime
-from models.transaction import Transaction
-from models.financial_summary import FinancialSummary, FinancialReport
-import pandas as pd
-from storage.json_storage import JsonStorage
-from utils.constants import TRANSACTIONS_FILE
+from datetime import date
+from decimal import Decimal
+from uuid import UUID
+
+from models.transaction import Transaction, TransactionSummary
 from utils.enums import TransactionType
 
 
-class TransactionService:
+TRANSACTION_HISTORY_SORT_OPTIONS = {
+    "date_desc": "t.transaction_date DESC, t.id DESC",
+    "date_asc": "t.transaction_date ASC, t.id ASC",
+    "amount_desc": "t.amount DESC, t.id DESC",
+    "amount_asc": "t.amount ASC, t.id ASC",
+    "category_asc": (
+        "c.category_name ASC, "
+        "t.transaction_date DESC, "
+        "t.id DESC"
+    ),
+    "category_desc": (
+        "c.category_name DESC, "
+        "t.transaction_date DESC, "
+        "t.id DESC"
+    )
+}
+
+DEFAULT_TRANSACTION_PAGE_SIZE = 10
+MAX_TRANSACTION_PAGE_SIZE = 10
+
+
+def create_transaction(
+    connection,
+    user_id: UUID,
+    amount: Decimal,
+    currency: str,
+    transaction_type: TransactionType,
+    category_id: UUID,
+    description: str | None,
+    transaction_date: date
+) -> Transaction:
     """
-    Handles all business logic related to financial transactions.
+    Creates a transaction for a user using the provided
+    database connection.
+
+    Database constraints and triggers provide the final
+    integrity and authorization checks.
     """
-    
-    def __init__(self, storage: JsonStorage):
-        """Initializes the transaction service with a storage handler."""
-
-        self.storage = storage
-
-
-    def add_transaction(self, transaction: Transaction):
-        """Adds a new transaction to storage."""
-
-        transactions = self.storage.load_data(TRANSACTIONS_FILE)
-
-        transactions.append(transaction.to_dict())
-
-        self.storage.save_data(TRANSACTIONS_FILE, transactions) 
-
-
-    def get_all_transactions(self):
-        """Retrieves all transactions from storage."""
-        
-        transactions_data = self.storage.load_data(TRANSACTIONS_FILE)
-        
-        transactions = []
-        
-        for transaction_data in transactions_data:
-            transactions.append(Transaction.from_dict(transaction_data))
-            
-        return transactions
-
-
-    def get_user_transactions(self, user_id: str) -> list[Transaction]:
+    row = connection.execute(
         """
-        Returns all transactions belonging to the specified user.
+        INSERT INTO transactions (
+            user_id,
+            amount,
+            currency,
+            transaction_type,
+            category_id,
+            description,
+            transaction_date
+        )
+        VALUES (%s, %s, %s, %s, %s, %s, %s)
+        RETURNING
+            id,
+            user_id,
+            amount,
+            currency,
+            transaction_type,
+            category_id,
+            description,
+            transaction_date;
+        """,
+        (
+            user_id,
+            amount,
+            currency,
+            transaction_type.value,
+            category_id,
+            description,
+            transaction_date
+        )
+    ).fetchone()
+
+    return Transaction(
+        id=row[0],
+        user_id=row[1],
+        amount=row[2],
+        currency=row[3],
+        transaction_type=TransactionType(row[4]),
+        category_id=row[5],
+        description=row[6],
+        transaction_date=row[7]
+    )
+
+
+def get_transaction_for_user(
+    connection,
+    user_id: UUID,
+    transaction_id: UUID
+) -> Transaction | None:
+    """
+    Retrieves a specific transaction belonging to a user.
+
+    Returns None if the transaction does not exist for the user.
+    """
+    row = connection.execute(
         """
+        SELECT
+            id,
+            user_id,
+            amount,
+            currency,
+            transaction_type,
+            category_id,
+            description,
+            transaction_date
+        FROM transactions
+        WHERE id = %s
+          AND user_id = %s;
+        """,
+        (transaction_id, user_id)
+    ).fetchone()
 
-        transactions = self.get_all_transactions()
+    if row is None:
+        return None
 
-        user_transactions = []
+    return Transaction(
+        id=row[0],
+        user_id=row[1],
+        amount=row[2],
+        currency=row[3],
+        transaction_type=TransactionType(row[4]),
+        category_id=row[5],
+        description=row[6],
+        transaction_date=row[7]
+    )
 
-        for transaction in transactions:
-            if transaction.user_id == user_id:
-                user_transactions.append(transaction)
 
-        return user_transactions
-    
+def get_transactions_for_user(
+    connection,
+    user_id: UUID
+) -> list[Transaction]:
+    """
+    Retrieves all transactions belonging to a user.
 
-    def update_transaction(self, transaction_id: str, updated_transaction: Transaction):
-        """Update an existing transaction."""
+    Transactions are returned from newest to oldest.
+    """
+    rows = connection.execute(
+        """
+        SELECT
+            id,
+            user_id,
+            amount,
+            currency,
+            transaction_type,
+            category_id,
+            description,
+            transaction_date
+        FROM transactions
+        WHERE user_id = %s
+        ORDER BY transaction_date DESC, id DESC;
+        """,
+        (user_id,)
+    ).fetchall()
 
-        transactions = self.storage.load_data(TRANSACTIONS_FILE)
-
-        for index, transaction in enumerate(transactions):
-            if transaction["id"] == transaction_id:
-                transactions[index] = updated_transaction.to_dict()
-                self.storage.save_data(TRANSACTIONS_FILE, transactions)
-                return
-            
-        raise ValueError(f"Transaction with id '{transaction_id}' not found.")
-    
-
-    def delete_transaction(self, transaction_id: str):
-        """Deletes a transaction from storage."""
-
-        transactions = self.storage.load_data(TRANSACTIONS_FILE)
-
-        for index, transaction in enumerate(transactions):
-            if transaction["id"] == transaction_id:
-               transactions.pop(index)
-               self.storage.save_data(TRANSACTIONS_FILE, transactions)
-               return
-        
-        raise ValueError(f"Transaction with id '{transaction_id}' not found.")
-    
-
-    def get_financial_summary(self, user_id: str) -> FinancialSummary:
-        """Calculates and returns the financial summary for the specified user."""
-
-        transactions = self.get_all_transactions()
-
-        total_income = 0
-        total_expense = 0
-        transaction_count = 0
-        
-        for transaction in transactions:
-
-            if transaction.user_id != user_id:
-                continue
-
-            transaction_count += 1
-
-            if transaction.transaction_type == TransactionType.INCOME:
-                total_income += transaction.amount
-
-            else:
-                total_expense += transaction.amount
-
-        return FinancialSummary(
-            total_income=total_income,
-            total_expense=total_expense,
-            transaction_count=transaction_count,
+    return [
+        Transaction(
+            id=row[0],
+            user_id=row[1],
+            amount=row[2],
+            currency=row[3],
+            transaction_type=TransactionType(row[4]),
+            category_id=row[5],
+            description=row[6],
+            transaction_date=row[7]
         )
-    
-    
-    def get_financial_report(self, user_id: str, year: int, month: int | None=None) -> FinancialReport:
-        """Generates a financial report for the specified period."""
-
-        transactions = self.get_all_transactions()
-
-        total_income = 0
-        total_expense = 0
-        transaction_count = 0
-
-        for transaction in transactions:
-            if transaction.user_id != user_id:
-                continue
-
-            if transaction.date.year != year:
-                continue
-
-            if month is not None and transaction.date.month != month:
-                continue
-
-            transaction_count += 1
-
-            if transaction.transaction_type == TransactionType.INCOME:
-                total_income += transaction.amount
-
-            else:
-                total_expense += transaction.amount
+        for row in rows
+    ]
 
 
-        if month is not None:
-            period = datetime(year, month, 1)
+def get_transaction_history(
+    connection,
+    user_id: UUID,
+    search: str | None = None,
+    transaction_type: TransactionType | None = None,
+    currency: str | None = None,
+    category_id: UUID | None = None,
+    start_date: date | None = None,
+    end_date: date | None = None,
+    sort: str = "date_desc",
+    page: int = 1,
+    per_page: int = DEFAULT_TRANSACTION_PAGE_SIZE
+) -> tuple[list[TransactionSummary], int]:
+    """
+    Retrieves a paginated transaction history for a user.
 
-        else:
-            period = datetime(year, 1, 1)
+    Supports searching, filtering, sorting, and pagination.
 
-        return FinancialReport(
-            total_income=total_income,
-            total_expense=total_expense,
-            period=period,
-            transaction_count=transaction_count,
+    Returns:
+        A tuple containing:
+        - the transactions for the requested page
+        - the total number of transactions matching the filters
+    """
+    page = max(page, 1)
+
+    per_page = min(
+        max(per_page, 1),
+        MAX_TRANSACTION_PAGE_SIZE
+    )
+
+    order_by = TRANSACTION_HISTORY_SORT_OPTIONS.get(
+        sort,
+        TRANSACTION_HISTORY_SORT_OPTIONS["date_desc"]
+    )
+
+    conditions = [
+        "t.user_id = %s"
+    ]
+
+    parameters = [user_id]
+
+    if search:
+        search_pattern = f"%{search.strip()}%"
+
+        conditions.append(
+            """
+            (
+                t.description ILIKE %s
+                OR c.category_name ILIKE %s
+            )
+            """
         )
 
-    
-    def search_transactions(self, user_id: str, field: str, value) -> list[Transaction]:
-        """Searches transactions using the specified field and value."""
+        parameters.extend([
+            search_pattern,
+            search_pattern
+        ])
 
-        transactions = self.get_all_transactions()
+    if transaction_type is not None:
+        conditions.append(
+            "t.transaction_type = %s"
+        )
 
-        transactions_data  = []
+        parameters.append(transaction_type.value)
 
-        for transaction in transactions:
-            transactions_data.append(transaction.to_dict())
+    if currency:
+        conditions.append(
+            "t.currency = %s"
+        )
 
-        df = pd.DataFrame(transactions_data)
+        parameters.append(currency)
 
-        if df.empty:
-            return []
+    if category_id is not None:
+        conditions.append(
+            "t.category_id = %s"
+        )
 
-        # Keep only the current user's transactions.
-        df = df[df["user_id"] == user_id]
+        parameters.append(category_id)
 
-        df["date_time"] = pd.to_datetime(df["date"])
+    if start_date is not None:
+        conditions.append(
+            "t.transaction_date >= %s"
+        )
 
-        df["year"] = df["date_time"].dt.year
-        df["month"] = df["date_time"].dt.month
+        parameters.append(start_date)
 
-        if field in ("category", "description", "transaction_type"):
-            filtered_df = df[df[field].str.lower() == value.lower()]
+    if end_date is not None:
+        conditions.append(
+            "t.transaction_date <= %s"
+        )
 
-        else:
-            filtered_df = df[df[field] == value]
+        parameters.append(end_date)
 
-        filtered_df = filtered_df.drop(columns=["date_time", "year", "month"])
+    where_clause = " AND ".join(conditions)
 
-        filtered_transactions = []
+    count_row = connection.execute(
+        f"""
+        SELECT COUNT(*)
+        FROM transactions AS t
+        JOIN categories AS c
+            ON c.id = t.category_id
+        WHERE {where_clause};
+        """,
+        parameters
+    ).fetchone()
 
-        for transaction in filtered_df.to_dict(orient="records"):
-            filtered_transactions.append(Transaction.from_dict(transaction))
+    total_count = count_row[0]
 
-        return filtered_transactions
+    offset = (page - 1) * per_page
 
+    rows = connection.execute(
+        f"""
+        SELECT
+            t.id,
+            t.user_id,
+            t.amount,
+            t.currency,
+            t.transaction_type,
+            t.category_id,
+            c.category_name,
+            t.description,
+            t.transaction_date
+        FROM transactions AS t
+        JOIN categories AS c
+            ON c.id = t.category_id
+        WHERE {where_clause}
+        ORDER BY {order_by}
+        LIMIT %s
+        OFFSET %s;
+        """,
+        parameters + [per_page, offset]
+    ).fetchall()
 
+    transactions = [
+        TransactionSummary(
+            id=row[0],
+            user_id=row[1],
+            amount=row[2],
+            currency=row[3],
+            transaction_type=TransactionType(row[4]),
+            category_id=row[5],
+            category_name=row[6],
+            description=row[7] if row[7] else None,
+            transaction_date=row[8]
+        )
+        for row in rows
+    ]
 
-    def filter_transactions(self, user_id: str, filter_type: str, value) -> list[Transaction]:
-        """Filters transactions using the specified condition."""
-
-        transactions = self.get_user_transactions(user_id)
-
-        transactions_data = []
-
-        for transaction in transactions:
-            transactions_data.append(transaction.to_dict())
-
-        df = pd.DataFrame(transactions_data)
-
-        if df.empty:
-            return []
-
-        if filter_type == "transaction_type":
-            filtered_df = df[df["transaction_type"] == value.value]
-
-
-        elif filter_type == "date_range":
-
-            start_date, end_date = value
-
-            df["filter_date"] = pd.to_datetime(df["date"]).dt.date
-
-            start_date = start_date.date()
-            end_date = end_date.date()
-
-            filtered_df = df[
-                (df["filter_date"] >= start_date) &
-                (df["filter_date"] <= end_date)
-            ]
-
-            filtered_df = filtered_df.drop(columns=["filter_date"])
-
-        elif filter_type == "amount_range":
-            minimum, maximum = value
-        
-            filtered_df = df[
-                (df["amount"] >= minimum) &
-                (df["amount"] <= maximum)
-            ]
-        
-        else:
-            raise ValueError(f"Unsupported filter type: {filter_type}")
-
-        filtered_transactions = []
-
-        for transaction in filtered_df.to_dict(orient="records"):
-            filtered_transactions.append(Transaction.from_dict(transaction))
-
-        return filtered_transactions
-
-
-    
-    
-
-        
-        
+    return transactions, total_count
 
 
+def get_transaction_summaries_for_user(
+    connection,
+    user_id: UUID
+) -> list[TransactionSummary]:
+    """
+    Retrieves a user's transactions with their category names.
+
+    Transactions are returned from newest to oldest.
+    """
+    transactions, _ = get_transaction_history(
+        connection=connection,
+        user_id=user_id
+    )
+
+    return transactions
 
 
+def update_transaction(
+    connection,
+    user_id: UUID,
+    transaction_id: UUID,
+    amount: Decimal,
+    currency: str,
+    transaction_type: TransactionType,
+    category_id: UUID,
+    description: str | None,
+    transaction_date: date
+) -> Transaction | None:
+    """
+    Updates a transaction belonging to a specific user.
+
+    Returns the updated transaction, or None if the transaction
+    does not exist for the given user.
+
+    Database constraints and triggers provide the final
+    integrity and authorization checks.
+    """
+    row = connection.execute(
+        """
+        UPDATE transactions
+        SET
+            amount = %s,
+            currency = %s,
+            transaction_type = %s,
+            category_id = %s,
+            description = %s,
+            transaction_date = %s
+        WHERE id = %s
+          AND user_id = %s
+        RETURNING
+            id,
+            user_id,
+            amount,
+            currency,
+            transaction_type,
+            category_id,
+            description,
+            transaction_date;
+        """,
+        (
+            amount,
+            currency,
+            transaction_type.value,
+            category_id,
+            description,
+            transaction_date,
+            transaction_id,
+            user_id
+        )
+    ).fetchone()
+
+    if row is None:
+        return None
+
+    return Transaction(
+        id=row[0],
+        user_id=row[1],
+        amount=row[2],
+        currency=row[3],
+        transaction_type=TransactionType(row[4]),
+        category_id=row[5],
+        description=row[6],
+        transaction_date=row[7]
+    )
 
 
+def delete_transaction(
+    connection,
+    user_id: UUID,
+    transaction_id: UUID
+) -> bool:
+    """
+    Deletes a transaction belonging to a specific user.
 
-    
+    Returns True if a transaction was deleted, otherwise False.
+    """
+    result = connection.execute(
+        """
+        DELETE FROM transactions
+        WHERE id = %s
+          AND user_id = %s;
+        """,
+        (transaction_id, user_id)
+    )
 
-    
-    
-    
-
-        
+    return result.rowcount == 1
