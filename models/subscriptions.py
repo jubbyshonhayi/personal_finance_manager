@@ -15,7 +15,7 @@ class SubscriptionPlan:
     description: str | None
     price: Decimal
     currency: str
-    billing_interval: BillingInterval
+    billing_interval: BillingInterval | None
     is_active: bool
 
 
