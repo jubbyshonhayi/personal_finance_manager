@@ -8,14 +8,17 @@ from flask import (
 )
 
 from database.connection import pool
+
 from services.financial_service import (
     get_available_currencies,
     get_category_breakdown,
     get_financial_summary,
 )
+
 from services.transaction_service import (
     get_transaction_summaries_for_user,
 )
+
 from utils.auth import login_required
 from utils.enums import TransactionType
 
@@ -29,8 +32,8 @@ def dashboard_page():
     """
     Displays the user's financial dashboard.
 
-    Financial calculations are always performed for one
-    selected currency at a time.
+    Financial calculations are performed for the selected currency,
+    while recent transactions include all currencies.
     """
     user_id = UUID(session["user_id"])
 
@@ -40,7 +43,7 @@ def dashboard_page():
             user_id=user_id
         )
 
-        transactions = get_transaction_summaries_for_user(
+        recent_transactions = get_transaction_summaries_for_user(
             connection=connection,
             user_id=user_id
         )
@@ -53,7 +56,7 @@ def dashboard_page():
                 summary=None,
                 net_amount=None,
                 category_breakdown=[],
-                recent_transactions=transactions[:5],
+                recent_transactions=recent_transactions,
                 TransactionType=TransactionType
             )
 
@@ -88,6 +91,6 @@ def dashboard_page():
         summary=summary,
         net_amount=net_amount,
         category_breakdown=category_breakdown,
-        recent_transactions=transactions[:5],
+        recent_transactions=recent_transactions,
         TransactionType=TransactionType
     )
