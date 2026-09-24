@@ -49,6 +49,12 @@
                             Add Transaction
                         </a>
 
+                        <a
+                            href="{{ url_for('budget.budgets_page') }}"
+                        >
+                            Budgets
+                        </a>
+
                         <form
                             method="POST"
                             action="{{ url_for('auth.logout') }}"
