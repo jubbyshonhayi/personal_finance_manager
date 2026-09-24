@@ -239,53 +239,6 @@
 }
 
 
-/* Shared actions */
-
-.button {
-    display: inline-block;
-    width: 100%;
-    padding: 0.7rem 1rem;
-    border: 0;
-    border-radius: 0.45rem;
-    font: inherit;
-    font-size: 0.875rem;
-    font-weight: 600;
-    text-align: center;
-    cursor: pointer;
-}
-
-.button-primary {
-    color: #ffffff;
-    background-color: #0d6efd;
-}
-
-.button-primary:hover {
-    background-color: #0b5ed7;
-}
-
-.button-danger {
-    color: #ffffff;
-    background-color: #dc3545;
-}
-
-.button-danger:hover {
-    background-color: #bb2d3b;
-}
-
-.back-link {
-    display: block;
-    margin-top: 1.25rem;
-    color: #6c757d;
-    font-size: 0.875rem;
-    text-align: center;
-}
-
-.back-link:hover {
-    color: #374151;
-    text-decoration: underline;
-}
-
-
 /* Larger screens */
 
 @media (min-width: 600px) {
@@ -311,7 +264,8 @@
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
-    .button {
+    .budget-form-card .button,
+    .budgets-page-header .button {
         width: auto;
     }
 }
