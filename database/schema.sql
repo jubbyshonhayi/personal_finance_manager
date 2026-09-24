@@ -44,12 +44,6 @@ CREATE TABLE categories (
 );
 
 
--- Speeds up retrieval and foreign-key deletion checks for
--- user-owned categories.
-CREATE INDEX categories_user_id_idx
-ON categories (user_id);
-
-
 -- Prevents duplicate category names for the same owner
 -- and transaction type.
 CREATE UNIQUE INDEX categories_user_type_name_unique
@@ -84,12 +78,6 @@ CREATE TABLE transactions (
 
     transaction_date DATE NOT NULL
 );
-
-
--- Speeds up queries that retrieve transactions for a user
--- and helps PostgreSQL process the user foreign-key cascade.
-CREATE INDEX transactions_user_id_idx
-ON transactions (user_id);
 
 
 -- Speeds up joins and foreign-key checks involving categories.
