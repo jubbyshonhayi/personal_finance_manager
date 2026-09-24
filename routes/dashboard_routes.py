@@ -9,6 +9,10 @@ from flask import (
 
 from database.connection import pool
 
+from services.budget_service import (
+    get_budget_progress_for_user,
+)
+
 from services.financial_service import (
     REPORTING_PERIODS,
     get_available_currencies,
@@ -34,8 +38,8 @@ def dashboard_page():
     Displays the user's financial dashboard.
 
     Financial calculations are performed for the selected
-    currency and reporting period, while recent transactions
-    include all currencies and remain unaffected by the period.
+    currency and reporting period, while budget progress
+    always reflects the current month.
     """
     user_id = UUID(session["user_id"])
 
@@ -54,6 +58,11 @@ def dashboard_page():
     )
 
     with pool.connection() as connection:
+        budget_progress = get_budget_progress_for_user(
+            connection=connection,
+            user_id=user_id
+        )
+
         currencies = get_available_currencies(
             connection=connection,
             user_id=user_id
@@ -74,6 +83,7 @@ def dashboard_page():
                 summary=None,
                 net_amount=None,
                 category_breakdown=[],
+                budget_progress=budget_progress,
                 recent_transactions=recent_transactions,
                 TransactionType=TransactionType
             )
@@ -106,6 +116,7 @@ def dashboard_page():
         summary=report,
         net_amount=net_amount,
         category_breakdown=report.category_breakdowns,
+        budget_progress=budget_progress,
         recent_transactions=recent_transactions,
         TransactionType=TransactionType
     )
