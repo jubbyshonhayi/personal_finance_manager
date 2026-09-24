@@ -1,20 +1,9 @@
 from dataclasses import dataclass
-from decimal import Decimal
 from datetime import date
+from decimal import Decimal
 from uuid import UUID
 
 from utils.enums import TransactionType
-
-
-@dataclass(frozen=True)
-class FinancialSummary:
-    """
-    Represents a calculated financial summary for a specific currency.
-    """
-    currency: str
-    total_income: Decimal
-    total_expense: Decimal
-    transaction_count: int
 
 
 @dataclass(frozen=True)
