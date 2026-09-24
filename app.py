@@ -10,6 +10,7 @@ from config import (
 )
 
 from routes.auth_routes import auth
+from routes.budget_routes import budget
 from routes.dashboard_routes import dashboard
 from routes.home_routes import home
 from routes.transaction_routes import transaction
@@ -107,6 +108,7 @@ app.register_blueprint(home)
 app.register_blueprint(auth)
 app.register_blueprint(dashboard)
 app.register_blueprint(transaction)
+app.register_blueprint(budget)
 
 
 if __name__ == "__main__":
