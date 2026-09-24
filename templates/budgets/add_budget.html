@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Add Budget | Personal Finance Manager
+{% endblock %}
+
+{% block head %}
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/budgets.css') }}"
+    >
+{% endblock %}
+
+{% block content %}
+    <div class="budget-form-page">
+        <section class="budget-form-card">
+            <header class="budget-form-header">
+                <h1>Create Monthly Budget</h1>
+                <p>
+                    Set a monthly spending limit for an expense category.
+                </p>
+            </header>
+
+            <form method="POST">
+                <input
+                    type="hidden"
+                    name="csrf_token"
+                    value="{{ csrf_token() }}"
+                >
+
+                <div class="budget-form-group">
+                    <label for="category_id">
+                        Expense Category
+                    </label>
+
+                    <select
+                        id="category_id"
+                        name="category_id"
+                        required
+                    >
+                        <option value="" selected disabled>
+                            Select a category
+                        </option>
+
+                        {% for category in categories %}
+                            <option value="{{ category.id }}">
+                                {{ category.category_name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="budget-form-group">
+                    <label for="currency">
+                        Currency
+                    </label>
+
+                    <select
+                        id="currency"
+                        name="currency"
+                        required
+                    >
+                        <option value="" selected disabled>
+                            Select currency
+                        </option>
+
+                        {% for code, currency in currencies.items() %}
+                            <option value="{{ code }}">
+                                {{ code }} - {{ currency.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="budget-form-group">
+                    <label for="monthly_limit">
+                        Monthly Limit
+                    </label>
+
+                    <div class="budget-input-with-hint">
+                        <input
+                            type="number"
+                            id="monthly_limit"
+                            name="monthly_limit"
+                            min="0.01"
+                            step="0.01"
+                            inputmode="decimal"
+                            required
+                        >
+
+                        <p>
+                            This limit applies each month.
+                        </p>
+                    </div>
+                </div>
+
+                <button
+                    type="submit"
+                    class="button button-primary"
+                >
+                    Create Budget
+                </button>
+            </form>
+
+            <a
+                class="back-link"
+                href="{{ url_for('budget.budgets_page') }}"
+            >
+                Back to Budgets
+            </a>
+        </section>
+    </div>
+{% endblock %}
