@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Budgets | Personal Finance Manager
+{% endblock %}
+
+{% block head %}
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/budgets.css') }}"
+    >
+{% endblock %}
+
+{% block content %}
+    <div class="budgets-page">
+        <header class="budgets-page-header">
+            <div>
+                <h1>Monthly Budgets</h1>
+                <p>
+                    Set spending limits for your expense categories.
+                </p>
+            </div>
+
+            <a
+                class="button button-primary"
+                href="{{ url_for('budget.add_budget') }}"
+            >
+                Add Budget
+            </a>
+        </header>
+
+        {% if budgets %}
+            <section class="budget-list" aria-label="Your budgets">
+                {% for budget in budgets %}
+                    <article class="budget-card">
+                        <div class="budget-card-header">
+                            <div>
+                                <h2>{{ budget.category_name }}</h2>
+                                <p>
+                                    Monthly spending limit
+                                    ·
+                                    {{ budget.currency }}
+                                </p>
+                            </div>
+
+                            <div class="budget-limit">
+                                {{ budget.monthly_limit }}
+                                {{ budget.currency }}
+                            </div>
+                        </div>
+
+                        <div class="budget-card-actions">
+                            <a
+                                class="budget-action-link"
+                                href="{{ url_for('budget.edit_budget', budget_id=budget.id) }}"
+                            >
+                                Edit
+                            </a>
+
+                            <a
+                                class="budget-action-link budget-action-delete"
+                                href="{{ url_for('budget.delete_budget_page', budget_id=budget.id) }}"
+                            >
+                                Delete
+                            </a>
+                        </div>
+                    </article>
+                {% endfor %}
+            </section>
+        {% else %}
+            <section class="budget-empty-state">
+                <div class="budget-empty-icon" aria-hidden="true">
+                    $
+                </div>
+
+                <h2>No budgets yet</h2>
+
+                <p>
+                    Create a monthly budget to start setting spending
+                    limits for your expense categories.
+                </p>
+
+                <a
+                    class="button button-primary"
+                    href="{{ url_for('budget.add_budget') }}"
+                >
+                    Create Your First Budget
+                </a>
+            </section>
+        {% endif %}
+    </div>
+{% endblock %}
