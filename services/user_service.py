@@ -1,5 +1,17 @@
-from database.connection import pool
 from models.user import User
+
+
+def _row_to_user(row) -> User:
+    """
+    Converts a database row into a User model.
+    """
+    return User(
+        id=row[0],
+        username=row[1],
+        email=row[2],
+        password_hash=row[3],
+        date_joined=row[4]
+    )
 
 
 def create_user(
@@ -28,45 +40,7 @@ def create_user(
         )
     ).fetchone()
 
-    return User(
-        id=row[0],
-        username=row[1],
-        email=row[2],
-        password_hash=row[3],
-        date_joined=row[4]
-    )
-
-
-def get_user_by_username(username: str) -> User | None:
-    """
-    Retrieves a user by username.
-    Returns None if the user does not exist.
-    """
-    with pool.connection() as connection:
-        row = connection.execute(
-            """
-            SELECT
-                id,
-                username,
-                email,
-                password_hash,
-                date_joined
-            FROM users
-            WHERE LOWER(username) = LOWER(%s);
-            """,
-            (username,)
-        ).fetchone()
-
-    if row is None:
-        return None
-
-    return User(
-        id=row[0],
-        username=row[1],
-        email=row[2],
-        password_hash=row[3],
-        date_joined=row[4]
-    )
+    return _row_to_user(row)
 
 
 def get_user_by_email(
@@ -94,13 +68,7 @@ def get_user_by_email(
     if row is None:
         return None
 
-    return User(
-        id=row[0],
-        username=row[1],
-        email=row[2],
-        password_hash=row[3],
-        date_joined=row[4]
-    )
+    return _row_to_user(row)
 
 
 def get_user_by_login_identifier(
@@ -134,10 +102,4 @@ def get_user_by_login_identifier(
     if row is None:
         return None
 
-    return User(
-        id=row[0],
-        username=row[1],
-        email=row[2],
-        password_hash=row[3],
-        date_joined=row[4]
-    )
+    return _row_to_user(row)
