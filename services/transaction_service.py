@@ -132,48 +132,6 @@ def get_transaction_for_user(
     )
 
 
-def get_transactions_for_user(
-    connection,
-    user_id: UUID
-) -> list[Transaction]:
-    """
-    Retrieves all transactions belonging to a user.
-
-    Transactions are returned from newest to oldest.
-    """
-    rows = connection.execute(
-        """
-        SELECT
-            id,
-            user_id,
-            amount,
-            currency,
-            transaction_type,
-            category_id,
-            description,
-            transaction_date
-        FROM transactions
-        WHERE user_id = %s
-        ORDER BY transaction_date DESC, id DESC;
-        """,
-        (user_id,)
-    ).fetchall()
-
-    return [
-        Transaction(
-            id=row[0],
-            user_id=row[1],
-            amount=row[2],
-            currency=row[3],
-            transaction_type=TransactionType(row[4]),
-            category_id=row[5],
-            description=row[6],
-            transaction_date=row[7]
-        )
-        for row in rows
-    ]
-
-
 def get_transaction_history(
     connection,
     user_id: UUID,
