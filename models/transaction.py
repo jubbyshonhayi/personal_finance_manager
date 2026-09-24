@@ -46,4 +46,4 @@ class Category:
     id: UUID
     user_id: UUID | None
     category_name: str
-    transaction_type: TransactionType | None
+    transaction_type: TransactionType
