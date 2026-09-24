@@ -45,11 +45,9 @@ from config import (
 )
 
 from utils.rate_limit import (
-    check_rate_limit,
     clear_rate_limit,
     consume_rate_limit,
-    get_client_ip,
-    record_rate_limit_failure
+    get_client_ip
 )
 
 
@@ -249,27 +247,19 @@ def login():
         client_ip = get_client_ip(request)
 
         with pool.connection() as connection:
-            identifier_allowed, _ = check_rate_limit(
+            identifier_allowed, _ = consume_rate_limit(
                 connection=connection,
                 scope="login_identifier",
                 identifier=identifier,
                 limit=LOGIN_IDENTIFIER_LIMIT
             )
 
-            ip_allowed, _ = check_rate_limit(
+            ip_allowed, _ = consume_rate_limit(
                 connection=connection,
                 scope="login_ip",
                 identifier=client_ip,
                 limit=LOGIN_IP_LIMIT
             )
-
-            if not identifier_allowed or not ip_allowed:
-                user = None
-            else:
-                user = get_user_by_login_identifier(
-                    connection=connection,
-                    identifier=identifier
-                )
 
             if not identifier_allowed or not ip_allowed:
                 flash(
@@ -278,22 +268,15 @@ def login():
                 )
                 return redirect(url_for("auth.login"))
 
+            user = get_user_by_login_identifier(
+                connection=connection,
+                identifier=identifier
+            )
+
             if user is None or not verify_password(
                 password,
                 user.password_hash
             ):
-                record_rate_limit_failure(
-                    connection=connection,
-                    scope="login_identifier",
-                    identifier=identifier
-                )
-
-                record_rate_limit_failure(
-                    connection=connection,
-                    scope="login_ip",
-                    identifier=client_ip
-                )
-
                 flash(
                     "Invalid username/email or password.",
                     "danger"
