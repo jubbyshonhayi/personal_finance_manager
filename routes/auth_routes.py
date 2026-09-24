@@ -233,49 +233,49 @@ def login():
                     identifier=identifier
                 )
 
-        if not identifier_allowed or not ip_allowed:
-            flash(
-                "Too many login attempts. Please try again later.",
-                "warning"
-            )
-            return redirect(url_for("auth.login"))
+            if not identifier_allowed or not ip_allowed:
+                flash(
+                    "Too many login attempts. Please try again later.",
+                    "warning"
+                )
+                return redirect(url_for("auth.login"))
 
-        if user is None or not verify_password(
-            password,
-            user.password_hash
-        ):
-            record_rate_limit_failure(
+            if user is None or not verify_password(
+                password,
+                user.password_hash
+            ):
+                record_rate_limit_failure(
+                    connection=connection,
+                    scope="login_identifier",
+                    identifier=identifier
+                )
+
+                record_rate_limit_failure(
+                    connection=connection,
+                    scope="login_ip",
+                    identifier=client_ip
+                )
+
+                flash(
+                    "Invalid username/email or password.",
+                    "danger"
+                )
+                return redirect(url_for("auth.login"))
+
+            clear_rate_limit(
                 connection=connection,
                 scope="login_identifier",
                 identifier=identifier
             )
 
-            record_rate_limit_failure(
+            clear_rate_limit(
                 connection=connection,
                 scope="login_ip",
                 identifier=client_ip
             )
 
-            flash(
-                "Invalid username/email or password.",
-                "danger"
-            )
-            return redirect(url_for("auth.login"))
-
-        clear_rate_limit(
-            connection=connection,
-            scope="login_identifier",
-            identifier=identifier
-        )
-
-        clear_rate_limit(
-            connection=connection,
-            scope="login_ip",
-            identifier=client_ip
-        )
-
-        session.clear()
-        session["user_id"] = str(user.id)
+            session.clear()
+            session["user_id"] = str(user.id)
 
         flash(
             "Login successful.",
@@ -486,8 +486,7 @@ def reset_password(token):
 
     flash(
         "Your password has been reset successfully. "
-        "You can now log in.",
-        "success"
+        "You can now log in."
     )
 
     return redirect(url_for("auth.login"))
