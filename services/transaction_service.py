@@ -147,6 +147,60 @@ def get_transaction_for_user(
     return _row_to_transaction(row)
 
 
+def _build_transaction_filters(
+    user_id: UUID,
+    search: str | None,
+    transaction_type: TransactionType | None,
+    currency: str | None,
+    category_id: UUID | None,
+    start_date: date | None,
+    end_date: date | None
+) -> tuple[str, list]:
+    """Builds the shared WHERE conditions for transaction queries."""
+    conditions = [
+        "t.user_id = %s"
+    ]
+
+    parameters = [user_id]
+
+    if search:
+        search_pattern = f"%{search.strip()}%"
+        conditions.append(
+            """
+            (
+                t.description ILIKE %s
+                OR c.category_name ILIKE %s
+            )
+            """
+        )
+        parameters.extend([
+            search_pattern,
+            search_pattern
+        ])
+
+    if transaction_type is not None:
+        conditions.append("t.transaction_type = %s")
+        parameters.append(transaction_type.value)
+
+    if currency:
+        conditions.append("t.currency = %s")
+        parameters.append(currency)
+
+    if category_id is not None:
+        conditions.append("t.category_id = %s")
+        parameters.append(category_id)
+
+    if start_date is not None:
+        conditions.append("t.transaction_date >= %s")
+        parameters.append(start_date)
+
+    if end_date is not None:
+        conditions.append("t.transaction_date <= %s")
+        parameters.append(end_date)
+
+    return " AND ".join(conditions), parameters
+
+
 def get_transaction_history(
     connection,
     user_id: UUID,
@@ -182,65 +236,15 @@ def get_transaction_history(
         TRANSACTION_HISTORY_SORT_OPTIONS["date_desc"]
     )
 
-    conditions = [
-        "t.user_id = %s"
-    ]
-
-    parameters = [user_id]
-
-    if search:
-        search_pattern = f"%{search.strip()}%"
-
-        conditions.append(
-            """
-            (
-                t.description ILIKE %s
-                OR c.category_name ILIKE %s
-            )
-            """
-        )
-
-        parameters.extend([
-            search_pattern,
-            search_pattern
-        ])
-
-    if transaction_type is not None:
-        conditions.append(
-            "t.transaction_type = %s"
-        )
-
-        parameters.append(transaction_type.value)
-
-    if currency:
-        conditions.append(
-            "t.currency = %s"
-        )
-
-        parameters.append(currency)
-
-    if category_id is not None:
-        conditions.append(
-            "t.category_id = %s"
-        )
-
-        parameters.append(category_id)
-
-    if start_date is not None:
-        conditions.append(
-            "t.transaction_date >= %s"
-        )
-
-        parameters.append(start_date)
-
-    if end_date is not None:
-        conditions.append(
-            "t.transaction_date <= %s"
-        )
-
-        parameters.append(end_date)
-
-    where_clause = " AND ".join(conditions)
+    where_clause, parameters = _build_transaction_filters(
+        user_id=user_id,
+        search=search,
+        transaction_type=transaction_type,
+        currency=currency,
+        category_id=category_id,
+        start_date=start_date,
+        end_date=end_date
+    )
 
     count_row = connection.execute(
         f"""
@@ -408,3 +412,57 @@ def delete_transaction(
     )
 
     return result.rowcount == 1
+
+
+def get_transactions_for_export(
+    connection,
+    user_id: UUID,
+    search: str | None = None,
+    transaction_type: TransactionType | None = None,
+    currency: str | None = None,
+    category_id: UUID | None = None,
+    start_date: date | None = None,
+    end_date: date | None = None,
+    sort: str = "date_desc"
+) -> list[TransactionSummary]:
+    """Retrieves all filtered transactions for CSV export."""
+    order_by = TRANSACTION_HISTORY_SORT_OPTIONS.get(
+        sort,
+        TRANSACTION_HISTORY_SORT_OPTIONS["date_desc"]
+    )
+
+    where_clause, parameters = _build_transaction_filters(
+        user_id=user_id,
+        search=search,
+        transaction_type=transaction_type,
+        currency=currency,
+        category_id=category_id,
+        start_date=start_date,
+        end_date=end_date
+    )
+
+    rows = connection.execute(
+        f"""
+        SELECT
+            t.id,
+            t.user_id,
+            t.amount,
+            t.currency,
+            t.transaction_type,
+            t.category_id,
+            c.category_name,
+            t.description,
+            t.transaction_date
+        FROM transactions AS t
+        JOIN categories AS c
+            ON c.id = t.category_id
+        WHERE {where_clause}
+        ORDER BY {order_by};
+        """,
+        parameters
+    ).fetchall()
+
+    return [
+        _row_to_transaction_summary(row)
+        for row in rows
+    ]
