@@ -1,7 +1,9 @@
+from calendar import monthrange
+from datetime import date
 from decimal import Decimal
 from uuid import UUID
 
-from models.budget import Budget
+from models.budget import Budget, BudgetProgress
 from utils.currencies import SUPPORTED_CURRENCIES
 from utils.enums import TransactionType
 
@@ -67,6 +69,65 @@ def _row_to_budget(row) -> Budget:
         monthly_limit=Decimal(row[5]),
         created_at=row[6],
         updated_at=row[7]
+    )
+
+
+def _current_month_range(
+    today: date | None = None
+) -> tuple[date, date]:
+    """
+    Returns the inclusive start and exclusive end of the current month.
+    """
+    current_date = today or date.today()
+    month_start = current_date.replace(day=1)
+
+    if current_date.month == 12:
+        next_month_start = date(
+            current_date.year + 1,
+            1,
+            1
+        )
+    else:
+        next_month_start = date(
+            current_date.year,
+            current_date.month + 1,
+            1
+        )
+
+    return month_start, next_month_start
+
+
+def _row_to_budget_progress(
+    row,
+    month_start: date,
+    month_end: date
+) -> BudgetProgress:
+    """
+    Converts a database row into a BudgetProgress model.
+    """
+    monthly_limit = Decimal(row[4])
+    spent_amount = Decimal(row[5])
+    remaining_amount = monthly_limit - spent_amount
+
+    if monthly_limit > 0:
+        progress_percentage = (
+            spent_amount / monthly_limit
+        ) * Decimal("100")
+    else:
+        progress_percentage = Decimal("0")
+
+    return BudgetProgress(
+        budget_id=row[0],
+        category_id=row[2],
+        category_name=row[3],
+        currency=row[4],
+        monthly_limit=monthly_limit,
+        spent_amount=spent_amount,
+        remaining_amount=remaining_amount,
+        progress_percentage=progress_percentage,
+        is_over_budget=spent_amount > monthly_limit,
+        month_start=month_start,
+        month_end=month_end
     )
 
 
@@ -203,6 +264,70 @@ def get_budgets_for_user(
     ).fetchall()
 
     return [_row_to_budget(row) for row in rows]
+
+
+def get_budget_progress_for_user(
+    connection,
+    user_id: UUID,
+    today: date | None = None
+) -> list[BudgetProgress]:
+    """
+    Calculates current-month spending against every user budget.
+
+    Budgets with no matching transactions are included with zero
+    spending. Transaction aggregation is performed by PostgreSQL.
+    """
+    month_start, month_end = _current_month_range(today)
+
+    rows = connection.execute(
+        """
+        SELECT
+            b.id,
+            b.user_id,
+            b.category_id,
+            c.category_name,
+            b.monthly_limit,
+            COALESCE(SUM(t.amount), 0),
+            b.currency
+        FROM budgets AS b
+        JOIN categories AS c
+            ON c.id = b.category_id
+        LEFT JOIN transactions AS t
+            ON t.user_id = b.user_id
+           AND t.category_id = b.category_id
+           AND t.currency = b.currency
+           AND t.transaction_type = %s
+           AND t.transaction_date >= %s
+           AND t.transaction_date < %s
+        WHERE b.user_id = %s
+        GROUP BY
+            b.id,
+            b.user_id,
+            b.category_id,
+            c.category_name,
+            b.monthly_limit,
+            b.currency
+        ORDER BY
+            b.currency ASC,
+            c.category_name ASC,
+            b.id ASC;
+        """,
+        (
+            TransactionType.EXPENSE.value,
+            month_start,
+            month_end,
+            user_id
+        )
+    ).fetchall()
+
+    return [
+        _row_to_budget_progress(
+            row=row,
+            month_start=month_start,
+            month_end=month_end
+        )
+        for row in rows
+    ]
 
 
 def update_budget(
