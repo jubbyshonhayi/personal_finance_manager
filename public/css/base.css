@@ -70,8 +70,13 @@ textarea {
 }
 
 .navbar-links {
+    display: none;
     flex-basis: 100%;
     margin-top: 0.75rem;
+}
+
+.navbar-links.navbar-open {
+    display: block;
 }
 
 .navbar-links-content {
@@ -316,6 +321,7 @@ textarea:focus-visible {
     }
 
     .navbar-links {
+        display: block;
         flex-basis: auto;
         margin-top: 0;
         margin-left: auto;
