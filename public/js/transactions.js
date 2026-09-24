@@ -1,82 +1,82 @@
-const allCategoryOptions = categorySelect
-    ? Array.from(categorySelect.options).map((option) =>
-        option.cloneNode(true)
-    )
-    : [];
+document.addEventListener("DOMContentLoaded", () => {
+    const transactionType = document.getElementById("transaction_type");
+    const categorySelect = document.getElementById("category_id");
+    const transactionDate = document.getElementById("transaction_date");
 
-function filterCategories() {
-    if (!transactionType || !categorySelect) {
-        return;
-    }
-
-    const selectedType = transactionType.value;
-    const currentCategory = categorySelect.value;
-
-    // Keep only categories that match the selected transaction type.
-    const matchingOptions = allCategoryOptions.filter((option) => {
-        const categoryType = option.dataset.type;
-
-        return (
-            option.value === "" ||
-            categoryType === selectedType ||
-            categoryType === "Both"
+    if (transactionType && categorySelect) {
+        const categories = Array.from(categorySelect.options).map(
+            (option) => ({
+                value: option.value,
+                text: option.textContent,
+                type: option.dataset.type
+            })
         );
-    });
 
-    // Rebuild the select instead of hiding options, which is more reliable
-    // across browsers and mobile devices.
-    categorySelect.replaceChildren();
+        function filterCategories() {
+            const selectedType = transactionType.value;
+            const currentCategory = categorySelect.value;
 
-    for (const option of matchingOptions) {
-        categorySelect.appendChild(option.cloneNode(true));
+            categorySelect.innerHTML = "";
+
+            const validCategories = categories.filter((category) => {
+                return (
+                    category.type === selectedType ||
+                    category.type === "Both"
+                );
+            });
+
+            validCategories.forEach((category) => {
+                const option = document.createElement("option");
+
+                option.value = category.value;
+                option.textContent = category.text;
+
+                if (category.value === currentCategory) {
+                    option.selected = true;
+                }
+
+                categorySelect.appendChild(option);
+            });
+
+            // If the previously selected category is not valid for the
+            // new transaction type, select the first valid category.
+            if (
+                !validCategories.some(
+                    (category) => category.value === currentCategory
+                ) &&
+                validCategories.length > 0
+            ) {
+                categorySelect.value = validCategories[0].value;
+            }
+        }
+
+        transactionType.addEventListener(
+            "change",
+            filterCategories
+        );
+
+        filterCategories();
     }
 
-    const currentCategoryStillExists = matchingOptions.some(
-        (option) => option.value === currentCategory
-    );
+    function setDefaultTransactionDate() {
+        if (
+            !transactionDate ||
+            transactionDate.value
+        ) {
+            return;
+        }
 
-    if (currentCategoryStillExists) {
-        categorySelect.value = currentCategory;
-        return;
+        const today = new Date();
+
+        const localDate = new Date(
+            today.getTime() -
+            today.getTimezoneOffset() * 60000
+        )
+            .toISOString()
+            .split("T")[0];
+
+        transactionDate.value = localDate;
     }
 
-    const firstSelectableOption = matchingOptions.find(
-        (option) => option.value !== ""
-    );
-
-    if (firstSelectableOption) {
-        categorySelect.value = firstSelectableOption.value;
-    }
-}
-
-function setDefaultTransactionDate() {
-    if (
-        !transactionDate ||
-        transactionDate.value
-    ) {
-        return;
-    }
-
-    const today = new Date();
-
-    // Convert the date to the user's local date before formatting it.
-    const localDate = new Date(
-        today.getTime() -
-        today.getTimezoneOffset() * 60000
-    )
-        .toISOString()
-        .split("T")[0];
-
-    transactionDate.value = localDate;
-}
-
-if (transactionType && categorySelect) {
-    transactionType.addEventListener(
-        "change",
-        filterCategories
-    );
-
-    filterCategories();
-}
-
-setDefaultTransactionDate();
+    setDefaultTransactionDate();
+});
