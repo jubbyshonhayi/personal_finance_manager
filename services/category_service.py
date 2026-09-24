@@ -51,11 +51,7 @@ def get_categories_for_user(
             id=row[0],
             user_id=row[1],
             category_name=row[2],
-            transaction_type=(
-                TransactionType(row[3])
-                if row[3] is not None
-                else None
-            )
+            transaction_type=TransactionType(row[3])
         )
         for row in rows
     ]
