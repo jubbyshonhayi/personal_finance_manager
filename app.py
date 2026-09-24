@@ -64,8 +64,8 @@ def apply_security_headers(response):
         "frame-src 'none'; "
         "img-src 'self'; "
         "object-src 'none'; "
-        "script-src 'self'; "
-        "style-src 'self';"
+        "script-src 'self' https://cdn.jsdelivr.net; "
+        "style-src 'self' https://cdn.jsdelivr.net;"
     )
 
     if SESSION_COOKIE_SECURE:
