@@ -261,6 +261,26 @@ ON transactions (
 );
 
 
+-- Speeds up financial report queries that filter transactions
+-- by user, currency, and transaction date.
+CREATE INDEX transactions_user_currency_date_idx
+ON transactions (
+    user_id,
+    currency,
+    transaction_date
+);
+
+
+-- Speeds up recent-transaction queries by matching the
+-- user's filtering and descending date ordering.
+CREATE INDEX transactions_user_date_desc_idx
+ON transactions (
+    user_id,
+    transaction_date DESC,
+    id DESC
+);
+
+
 -- Stores the subscription plans offered by the application.
 --
 -- billing_interval is NULL for plans without recurring billing,
