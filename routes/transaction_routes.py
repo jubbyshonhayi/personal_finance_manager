@@ -389,7 +389,7 @@ def add_transaction():
         )
 
         return redirect(
-            url_for("dashboard.dashboard_page")
+            url_for("transaction.transactions_page")
         )
 
     with pool.connection() as connection:
