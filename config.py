@@ -15,12 +15,12 @@ DEBUG = os.getenv(
     "False"
 ).lower() == "true"
 
-SESSION_COOKIE_SECURE = os.getenv(
-    "SESSION_COOKIE_SECURE",
-    "not-debug"
-).lower() == "true" or (
-    os.getenv("SESSION_COOKIE_SECURE", "not-debug").lower() == "not-debug"
-    and not DEBUG
+SESSION_COOKIE_SECURE = (
+    os.getenv("SESSION_COOKIE_SECURE", "").lower() == "true"
+    or (
+        os.getenv("SESSION_COOKIE_SECURE") is None
+        and not DEBUG
+    )
 )
 
 SESSION_COOKIE_HTTPONLY = True
