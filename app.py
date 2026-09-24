@@ -62,7 +62,7 @@ def apply_security_headers(response):
         "form-action 'self'; "
         "frame-ancestors 'none'; "
         "frame-src 'none'; "
-        "img-src 'self'; "
+        "img-src 'self' data:; "
         "object-src 'none'; "
         "script-src 'self' https://cdn.jsdelivr.net; "
         "style-src 'self' https://cdn.jsdelivr.net;"
