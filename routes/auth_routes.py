@@ -225,14 +225,20 @@ def login():
                 limit=LOGIN_IP_LIMIT
             )
 
+            if not identifier_allowed or not ip_allowed:
+                user = None
+            else:
+                user = get_user_by_login_identifier(
+                    connection=connection,
+                    identifier=identifier
+                )
+
         if not identifier_allowed or not ip_allowed:
             flash(
                 "Too many login attempts. Please try again later.",
                 "warning"
             )
             return redirect(url_for("auth.login"))
-
-        user = get_user_by_login_identifier(identifier)
 
         if user is None or not verify_password(
             password,
@@ -275,6 +281,7 @@ def login():
         return redirect(url_for("dashboard.dashboard_page"))
 
     return render_template("auth/login.html")
+
 
 @auth.route("/logout", methods=["POST"])
 @auth.route("/logout")
