@@ -172,11 +172,16 @@ def get_financial_report(
         )
     ).fetchall()
 
-    report_start_date = start_date or summary_row[3]
-    report_end_date = end_date or summary_row[4]
-
-    if report_start_date is None or report_end_date is None:
-        raise ValueError("A financial report requires at least one transaction.")
+    report_start_date = (
+        start_date
+        or summary_row[3]
+        or date.today()
+    )
+    report_end_date = (
+        end_date
+        or summary_row[4]
+        or report_start_date
+    )
 
     category_breakdowns = tuple(
         CategoryBreakdown(
