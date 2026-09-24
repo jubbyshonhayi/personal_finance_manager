@@ -263,12 +263,17 @@ def login():
             )
             return redirect(url_for("auth.login"))
 
-        with pool.connection() as connection:
-            clear_rate_limit(
-                connection=connection,
-                scope="login_identifier",
-                identifier=identifier
-            )
+        clear_rate_limit(
+            connection=connection,
+            scope="login_identifier",
+            identifier=identifier
+        )
+
+        clear_rate_limit(
+            connection=connection,
+            scope="login_ip",
+            identifier=client_ip
+        )
 
         session.clear()
         session["user_id"] = str(user.id)
