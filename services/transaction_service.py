@@ -27,6 +27,39 @@ DEFAULT_TRANSACTION_PAGE_SIZE = 10
 MAX_TRANSACTION_PAGE_SIZE = 10
 
 
+def _row_to_transaction(row) -> Transaction:
+    """
+    Converts a database row into a Transaction model.
+    """
+    return Transaction(
+        id=row[0],
+        user_id=row[1],
+        amount=row[2],
+        currency=row[3],
+        transaction_type=TransactionType(row[4]),
+        category_id=row[5],
+        description=row[6],
+        transaction_date=row[7]
+    )
+
+
+def _row_to_transaction_summary(row) -> TransactionSummary:
+    """
+    Converts a database row into a TransactionSummary model.
+    """
+    return TransactionSummary(
+        id=row[0],
+        user_id=row[1],
+        amount=row[2],
+        currency=row[3],
+        transaction_type=TransactionType(row[4]),
+        category_id=row[5],
+        category_name=row[6],
+        description=row[7] if row[7] else None,
+        transaction_date=row[8]
+    )
+
+
 def create_transaction(
     connection,
     user_id: UUID,
@@ -77,16 +110,7 @@ def create_transaction(
         )
     ).fetchone()
 
-    return Transaction(
-        id=row[0],
-        user_id=row[1],
-        amount=row[2],
-        currency=row[3],
-        transaction_type=TransactionType(row[4]),
-        category_id=row[5],
-        description=row[6],
-        transaction_date=row[7]
-    )
+    return _row_to_transaction(row)
 
 
 def get_transaction_for_user(
@@ -120,16 +144,7 @@ def get_transaction_for_user(
     if row is None:
         return None
 
-    return Transaction(
-        id=row[0],
-        user_id=row[1],
-        amount=row[2],
-        currency=row[3],
-        transaction_type=TransactionType(row[4]),
-        category_id=row[5],
-        description=row[6],
-        transaction_date=row[7]
-    )
+    return _row_to_transaction(row)
 
 
 def get_transaction_history(
@@ -266,17 +281,7 @@ def get_transaction_history(
     ).fetchall()
 
     transactions = [
-        TransactionSummary(
-            id=row[0],
-            user_id=row[1],
-            amount=row[2],
-            currency=row[3],
-            transaction_type=TransactionType(row[4]),
-            category_id=row[5],
-            category_name=row[6],
-            description=row[7] if row[7] else None,
-            transaction_date=row[8]
-        )
+        _row_to_transaction_summary(row)
         for row in rows
     ]
 
@@ -318,17 +323,7 @@ def get_transaction_summaries_for_user(
     ).fetchall()
 
     return [
-        TransactionSummary(
-            id=row[0],
-            user_id=row[1],
-            amount=row[2],
-            currency=row[3],
-            transaction_type=TransactionType(row[4]),
-            category_id=row[5],
-            category_name=row[6],
-            description=row[7] if row[7] else None,
-            transaction_date=row[8]
-        )
+        _row_to_transaction_summary(row)
         for row in rows
     ]
 
@@ -390,16 +385,7 @@ def update_transaction(
     if row is None:
         return None
 
-    return Transaction(
-        id=row[0],
-        user_id=row[1],
-        amount=row[2],
-        currency=row[3],
-        transaction_type=TransactionType(row[4]),
-        category_id=row[5],
-        description=row[6],
-        transaction_date=row[7]
-    )
+    return _row_to_transaction(row)
 
 
 def delete_transaction(

@@ -6,6 +6,8 @@ from flask_wtf.csrf import CSRFProtect
 from config import (
     DEBUG,
     SECRET_KEY,
+    SESSION_COOKIE_HTTPONLY,
+    SESSION_COOKIE_SAMESITE,
     SESSION_COOKIE_SECURE
 )
 
@@ -29,8 +31,8 @@ app = Flask(
 app.config["SECRET_KEY"] = SECRET_KEY
 
 # Session cookie security settings.
-app.config["SESSION_COOKIE_HTTPONLY"] = True
-app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+app.config["SESSION_COOKIE_HTTPONLY"] = SESSION_COOKIE_HTTPONLY
+app.config["SESSION_COOKIE_SAMESITE"] = SESSION_COOKIE_SAMESITE
 app.config["SESSION_COOKIE_SECURE"] = SESSION_COOKIE_SECURE
 
 # Enables CSRF protection for state-changing requests such as POST.
