@@ -284,7 +284,6 @@ def login():
 
 
 @auth.route("/logout", methods=["POST"])
-@auth.route("/logout")
 def logout():
     """
     Logs the user out by clearing their session.
