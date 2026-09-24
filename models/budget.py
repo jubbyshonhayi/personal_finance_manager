@@ -12,6 +12,7 @@ class Budget:
     id: UUID
     user_id: UUID
     category_id: UUID
+    category_name: str
     currency: str
     monthly_limit: Decimal
     created_at: datetime
