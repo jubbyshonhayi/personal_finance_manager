@@ -88,113 +88,6 @@ def get_client_ip(request) -> str:
     return request.remote_addr or "unknown"
 
 
-def check_rate_limit(
-    connection,
-    scope: str,
-    identifier: str,
-    limit: int
-) -> tuple[bool, int]:
-    """
-    Checks whether an identifier has reached its rate limit.
-
-    Returns:
-        A tuple containing whether the request is allowed and
-        the number of seconds until the current window resets.
-    """
-    current_time = datetime.now(timezone.utc)
-
-    window_start = _get_window_start(
-        current_time
-    )
-
-    _cleanup_expired_buckets(
-        connection=connection,
-        current_window_start=window_start
-    )
-
-    bucket_key = _hash_rate_limit_key(
-        scope=scope,
-        identifier=identifier
-    )
-
-    row = connection.execute(
-        """
-        SELECT request_count
-        FROM auth_rate_limit_buckets
-        WHERE bucket_key = %s
-          AND window_started_at = %s;
-        """,
-        (
-            bucket_key,
-            window_start
-        )
-    ).fetchone()
-
-    request_count = (
-        row[0]
-        if row is not None
-        else 0
-    )
-
-    window_end = (
-        window_start
-        + RATE_LIMIT_WINDOW
-    )
-
-    retry_after = max(
-        0,
-        int(
-            (
-                window_end - current_time
-            ).total_seconds()
-        )
-    )
-
-    return request_count < limit, retry_after
-
-
-def record_rate_limit_failure(
-    connection,
-    scope: str,
-    identifier: str
-) -> None:
-    """
-    Records a failed authentication attempt for an identifier.
-    """
-    current_time = datetime.now(timezone.utc)
-
-    window_start = _get_window_start(
-        current_time
-    )
-
-    bucket_key = _hash_rate_limit_key(
-        scope=scope,
-        identifier=identifier
-    )
-
-    connection.execute(
-        """
-        INSERT INTO auth_rate_limit_buckets (
-            bucket_key,
-            window_started_at,
-            request_count
-        )
-        VALUES (%s, %s, 1)
-        ON CONFLICT (
-            bucket_key,
-            window_started_at
-        )
-        DO UPDATE SET
-            request_count =
-                auth_rate_limit_buckets.request_count + 1;
-        """,
-        (
-            bucket_key,
-            window_start
-        )
-    )
-
-
 def consume_rate_limit(
     connection,
     scope: str,
@@ -205,8 +98,8 @@ def consume_rate_limit(
     Records one request and checks whether it is within
     the configured rate limit.
 
-    This is intended for endpoints where every request
-    should count, such as password-reset requests.
+    This uses a single atomic PostgreSQL upsert so concurrent
+    requests cannot bypass the request counter.
     """
     current_time = datetime.now(timezone.utc)
 
