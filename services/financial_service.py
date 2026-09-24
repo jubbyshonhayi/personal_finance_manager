@@ -1,11 +1,20 @@
+from datetime import date, timedelta
 from decimal import Decimal
 from uuid import UUID
 
 from models.financial_summary import (
     CategoryBreakdown,
-    FinancialSummary,
+    FinancialReport,
 )
 from utils.enums import TransactionType
+
+
+REPORTING_PERIODS = {
+    "all_time": "All Time",
+    "this_month": "This Month",
+    "last_month": "Last Month",
+    "this_year": "This Year",
+}
 
 
 def get_available_currencies(
@@ -30,17 +39,70 @@ def get_available_currencies(
     return [row[0] for row in rows]
 
 
-def get_financial_summary(
+def get_reporting_period_dates(
+    period: str,
+    today: date | None = None
+) -> tuple[date | None, date | None]:
+    """
+    Converts a validated reporting-period key into its date range.
+
+    Returns (None, None) for all-time reporting.
+    """
+    if period not in REPORTING_PERIODS:
+        raise ValueError("Invalid reporting period.")
+
+    current_date = today or date.today()
+
+    if period == "all_time":
+        return None, None
+
+    if period == "this_month":
+        return (
+            current_date.replace(day=1),
+            current_date
+        )
+
+    if period == "last_month":
+        current_month_start = current_date.replace(day=1)
+        last_month_end = current_month_start - timedelta(days=1)
+
+        return (
+            last_month_end.replace(day=1),
+            last_month_end
+        )
+
+    # period == "this_year"
+    return (
+        date(current_date.year, 1, 1),
+        current_date
+    )
+
+
+def get_financial_report(
     connection,
     user_id: UUID,
-    currency: str
-) -> FinancialSummary:
+    currency: str,
+    start_date: date | None = None,
+    end_date: date | None = None
+) -> FinancialReport:
     """
-    Calculates income, expenses, and transaction count
-    for a user in one specific currency.
+    Calculates a financial report for one user, currency,
+    and optional date range.
+
+    The report includes income, expenses, transaction count,
+    and expense breakdowns by category.
     """
-    row = connection.execute(
+    date_filter = ""
+    date_params = ()
+
+    if start_date is not None and end_date is not None:
+        date_filter = """
+          AND transaction_date BETWEEN %s AND %s
         """
+        date_params = (start_date, end_date)
+
+    summary_row = connection.execute(
+        f"""
         SELECT
             COALESCE(
                 SUM(
@@ -62,42 +124,25 @@ def get_financial_summary(
                 ),
                 0
             ),
-            COUNT(*)
+            COUNT(*),
+            MIN(transaction_date),
+            MAX(transaction_date)
         FROM transactions
         WHERE user_id = %s
-          AND currency = %s;
+          AND currency = %s
+          {date_filter};
         """,
         (
             TransactionType.INCOME.value,
             TransactionType.EXPENSE.value,
             user_id,
-            currency
+            currency,
+            *date_params
         )
     ).fetchone()
 
-    total_income = Decimal(row[0])
-    total_expense = Decimal(row[1])
-
-    return FinancialSummary(
-        currency=currency,
-        total_income=total_income,
-        total_expense=total_expense,
-        transaction_count=row[2]
-    )
-
-
-def get_category_breakdown(
-    connection,
-    user_id: UUID,
-    currency: str,
-    transaction_type: TransactionType = TransactionType.EXPENSE
-) -> list[CategoryBreakdown]:
-    """
-    Calculates financial activity grouped by category
-    for one specific currency and transaction type.
-    """
-    rows = connection.execute(
-        """
+    category_rows = connection.execute(
+        f"""
         SELECT
             c.id,
             c.category_name,
@@ -110,6 +155,7 @@ def get_category_breakdown(
         WHERE t.user_id = %s
           AND t.currency = %s
           AND t.transaction_type = %s
+          {date_filter.replace("transaction_date", "t.transaction_date")}
         GROUP BY
             c.id,
             c.category_name,
@@ -121,11 +167,18 @@ def get_category_breakdown(
         (
             user_id,
             currency,
-            transaction_type.value
+            TransactionType.EXPENSE.value,
+            *date_params
         )
     ).fetchall()
 
-    return [
+    report_start_date = start_date or summary_row[3]
+    report_end_date = end_date or summary_row[4]
+
+    if report_start_date is None or report_end_date is None:
+        raise ValueError("A financial report requires at least one transaction.")
+
+    category_breakdowns = tuple(
         CategoryBreakdown(
             category_id=row[0],
             category_name=row[1],
@@ -133,5 +186,15 @@ def get_category_breakdown(
             total_amount=Decimal(row[3]),
             transaction_count=row[4]
         )
-        for row in rows
-    ]
+        for row in category_rows
+    )
+
+    return FinancialReport(
+        currency=currency,
+        start_date=report_start_date,
+        end_date=report_end_date,
+        total_income=Decimal(summary_row[0]),
+        total_expense=Decimal(summary_row[1]),
+        transaction_count=summary_row[2],
+        category_breakdowns=category_breakdowns
+    )
