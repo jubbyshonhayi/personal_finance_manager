@@ -456,22 +456,181 @@ def edit_transaction(transaction_id):
                 currencies=SUPPORTED_CURRENCIES
             )
 
-        amount = request.form.get("amount")
-        currency = request.form.get("currency")
-        transaction_type = request.form.get("transaction_type")
-        category_id = request.form.get("category_id")
-        description = request.form.get("description")
-        transaction_date = request.form.get("transaction_date")
+    amount = request.form.get("amount")
+    currency = request.form.get("currency")
+    transaction_type = request.form.get("transaction_type")
+    category_id = request.form.get("category_id")
+    description = request.form.get("description")
+    transaction_date = request.form.get("transaction_date")
 
+    if (
+        not amount
+        or not currency
+        or not transaction_type
+        or not category_id
+        or not transaction_date
+    ):
+        flash(
+            "Please complete all required fields.",
+            "danger"
+        )
+        return redirect(
+            url_for(
+                "transaction.edit_transaction",
+                transaction_id=transaction_id
+            )
+        )
+
+    currency = currency.strip().upper()
+
+    if currency not in SUPPORTED_CURRENCIES:
+        flash(
+            "Invalid currency.",
+            "danger"
+        )
+        return redirect(
+            url_for(
+                "transaction.edit_transaction",
+                transaction_id=transaction_id
+            )
+        )
+
+    try:
+        amount = Decimal(amount)
+    except DecimalException:
+        flash(
+            "Amount must be a valid number.",
+            "danger"
+        )
+        return redirect(
+            url_for(
+                "transaction.edit_transaction",
+                transaction_id=transaction_id
+            )
+        )
+
+    if not amount.is_finite():
+        flash(
+            "Amount must be a valid finite number.",
+            "danger"
+        )
+        return redirect(
+            url_for(
+                "transaction.edit_transaction",
+                transaction_id=transaction_id
+            )
+        )
+
+    if amount <= 0:
+        flash(
+            "Amount must be greater than zero.",
+            "danger"
+        )
+        return redirect(
+            url_for(
+                "transaction.edit_transaction",
+                transaction_id=transaction_id
+            )
+        )
+
+    if amount.as_tuple().exponent < -4:
+        flash(
+            "Amount cannot have more than 4 decimal places.",
+            "danger"
+        )
+        return redirect(
+            url_for(
+                "transaction.edit_transaction",
+                transaction_id=transaction_id
+            )
+        )
+
+    try:
+        transaction_type = TransactionType(
+            transaction_type
+        )
+    except ValueError:
+        flash(
+            "Invalid transaction type.",
+            "danger"
+        )
+        return redirect(
+            url_for(
+                "transaction.edit_transaction",
+                transaction_id=transaction_id
+            )
+        )
+
+    try:
+        category_id = UUID(category_id)
+    except ValueError:
+        flash(
+            "Invalid category.",
+            "danger"
+        )
+        return redirect(
+            url_for(
+                "transaction.edit_transaction",
+                transaction_id=transaction_id
+            )
+        )
+
+    description = (
+        description.strip()
+        if description
+        else None
+    )
+
+    if description and len(description) > 500:
+        flash(
+            "Description must not exceed 500 characters.",
+            "danger"
+        )
+        return redirect(
+            url_for(
+                "transaction.edit_transaction",
+                transaction_id=transaction_id
+            )
+        )
+
+    try:
+        transaction_date = date.fromisoformat(
+            transaction_date
+        )
+    except ValueError:
+        flash(
+            "Invalid transaction date.",
+            "danger"
+        )
+        return redirect(
+            url_for(
+                "transaction.edit_transaction",
+                transaction_id=transaction_id
+            )
+        )
+
+    try:
+        with pool.connection() as connection:
+            updated_transaction = update_transaction(
+                connection=connection,
+                user_id=user_id,
+                transaction_id=transaction_id,
+                amount=amount,
+                currency=currency,
+                transaction_type=transaction_type,
+                category_id=category_id,
+                description=description,
+                transaction_date=transaction_date
+            )
+
+    except RaiseException as error:
         if (
-            not amount
-            or not currency
-            or not transaction_type
-            or not category_id
-            or not transaction_date
+            "Transaction type does not match category type"
+            in str(error)
         ):
             flash(
-                "Please complete all required fields.",
+                "The selected category does not match "
+                "the transaction type.",
                 "danger"
             )
             return redirect(
@@ -481,11 +640,12 @@ def edit_transaction(transaction_id):
                 )
             )
 
-        currency = currency.strip().upper()
-
-        if currency not in SUPPORTED_CURRENCIES:
+        if (
+            "Transaction cannot use another user"
+            in str(error)
+        ):
             flash(
-                "Invalid currency.",
+                "You cannot use that category.",
                 "danger"
             )
             return redirect(
@@ -495,197 +655,37 @@ def edit_transaction(transaction_id):
                 )
             )
 
-        try:
-            amount = Decimal(amount)
-        except DecimalException:
-            flash(
-                "Amount must be a valid number.",
-                "danger"
-            )
-            return redirect(
-                url_for(
-                    "transaction.edit_transaction",
-                    transaction_id=transaction_id
-                )
-            )
+        raise
 
-        if not amount.is_finite():
-            flash(
-                "Amount must be a valid finite number.",
-                "danger"
-            )
-            return redirect(
-                url_for(
-                    "transaction.edit_transaction",
-                    transaction_id=transaction_id
-                )
-            )
-
-        if amount <= 0:
-            flash(
-                "Amount must be greater than zero.",
-                "danger"
-            )
-            return redirect(
-                url_for(
-                    "transaction.edit_transaction",
-                    transaction_id=transaction_id
-                )
-            )
-
-        if amount.as_tuple().exponent < -4:
-            flash(
-                "Amount cannot have more than 4 decimal places.",
-                "danger"
-            )
-            return redirect(
-                url_for(
-                    "transaction.edit_transaction",
-                    transaction_id=transaction_id
-                )
-            )
-
-        try:
-            transaction_type = TransactionType(
-                transaction_type
-            )
-        except ValueError:
-            flash(
-                "Invalid transaction type.",
-                "danger"
-            )
-            return redirect(
-                url_for(
-                    "transaction.edit_transaction",
-                    transaction_id=transaction_id
-                )
-            )
-
-        try:
-            category_id = UUID(category_id)
-        except ValueError:
-            flash(
-                "Invalid category.",
-                "danger"
-            )
-            return redirect(
-                url_for(
-                    "transaction.edit_transaction",
-                    transaction_id=transaction_id
-                )
-            )
-
-        description = (
-            description.strip()
-            if description
-            else None
-        )
-
-        if description and len(description) > 500:
-            flash(
-                "Description must not exceed 500 characters.",
-                "danger"
-            )
-            return redirect(
-                url_for(
-                    "transaction.edit_transaction",
-                    transaction_id=transaction_id
-                )
-            )
-
-        try:
-            transaction_date = date.fromisoformat(
-                transaction_date
-            )
-        except ValueError:
-            flash(
-                "Invalid transaction date.",
-                "danger"
-            )
-            return redirect(
-                url_for(
-                    "transaction.edit_transaction",
-                    transaction_id=transaction_id
-                )
-            )
-
-        try:
-            with pool.connection() as connection:
-                updated_transaction = update_transaction(
-                    connection=connection,
-                    user_id=user_id,
-                    transaction_id=transaction_id,
-                    amount=amount,
-                    currency=currency,
-                    transaction_type=transaction_type,
-                    category_id=category_id,
-                    description=description,
-                    transaction_date=transaction_date
-                )
-
-        except RaiseException as error:
-            if (
-                "Transaction type does not match category type"
-                in str(error)
-            ):
-                flash(
-                    "The selected category does not match "
-                    "the transaction type.",
-                    "danger"
-                )
-                return redirect(
-                    url_for(
-                        "transaction.edit_transaction",
-                        transaction_id=transaction_id
-                    )
-                )
-
-            if (
-                "Transaction cannot use another user"
-                in str(error)
-            ):
-                flash(
-                    "You cannot use that category.",
-                    "danger"
-                )
-                return redirect(
-                    url_for(
-                        "transaction.edit_transaction",
-                        transaction_id=transaction_id
-                    )
-                )
-
-            raise
-
-        except ForeignKeyViolation:
-            flash(
-                "The selected category does not exist.",
-                "danger"
-            )
-            return redirect(
-                url_for(
-                    "transaction.edit_transaction",
-                    transaction_id=transaction_id
-                )
-            )
-
-        if updated_transaction is None:
-            flash(
-                "Transaction not found.",
-                "danger"
-            )
-            return redirect(
-                url_for("dashboard.dashboard_page")
-            )
-
+    except ForeignKeyViolation:
         flash(
-            "Transaction updated successfully.",
-            "success"
+            "The selected category does not exist.",
+            "danger"
+        )
+        return redirect(
+            url_for(
+                "transaction.edit_transaction",
+                transaction_id=transaction_id
+            )
         )
 
+    if updated_transaction is None:
+        flash(
+            "Transaction not found.",
+            "danger"
+        )
         return redirect(
             url_for("dashboard.dashboard_page")
         )
+
+    flash(
+        "Transaction updated successfully.",
+        "success"
+    )
+
+    return redirect(
+        url_for("dashboard.dashboard_page")
+    )
 
 
 @transaction.route(
