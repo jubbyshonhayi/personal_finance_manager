@@ -249,7 +249,7 @@ def add_transaction():
         currency = currency.strip().upper()
 
         if currency not in SUPPORTED_CURRENCIES:
-            flash("Invalid currency.", "danger")
+            flash("Please select a valid currency.", "danger")
             return redirect(
                 url_for("transaction.add_transaction")
             )
@@ -300,7 +300,7 @@ def add_transaction():
         try:
             category_id = UUID(category_id)
         except ValueError:
-            flash("Invalid category.", "danger")
+            flash("Please select a valid category.", "danger")
             return redirect(
                 url_for("transaction.add_transaction")
             )
