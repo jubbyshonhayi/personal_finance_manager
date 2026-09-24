@@ -68,30 +68,10 @@ END;
 $$ LANGUAGE plpgsql;
 
 
--- The trigger may already exist from migration 003. Create it only
--- when it is missing so this corrective migration is safe to rerun.
-DO $$
-BEGIN
-    IF NOT EXISTS (
-        SELECT 1
-        FROM pg_trigger
-        WHERE tgname = 'user_subscription_active_plan_check'
-          AND tgrelid = 'user_subscriptions'::regclass
-    ) THEN
-        CREATE TRIGGER user_subscription_active_plan_check
-        BEFORE INSERT OR UPDATE OF plan_id, status
-        ON user_subscriptions
-        FOR EACH ROW
-        EXECUTE FUNCTION check_active_subscription_plan();
-    END IF;
-END;
-$$;
-
-
--- Recreate the active-subscription guard function even when the
--- original migration has already created it.
+-- Recreate the active-subscription guard function before
+-- ensuring its trigger exists.
 CREATE OR REPLACE FUNCTION check_active_subscription_plan()
-RETURNS TRIGGER AS $$
+RETURNS TRIGGER AS $
 DECLARE
     plan_active BOOLEAN;
 BEGIN
@@ -109,7 +89,27 @@ BEGIN
 
     RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
+$ LANGUAGE plpgsql;
+
+
+-- The trigger may already exist from migration 003. Create it only
+-- when it is missing so this corrective migration is safe to rerun.
+DO $
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1
+        FROM pg_trigger
+        WHERE tgname = 'user_subscription_active_plan_check'
+          AND tgrelid = 'user_subscriptions'::regclass
+    ) THEN
+        CREATE TRIGGER user_subscription_active_plan_check
+        BEFORE INSERT OR UPDATE OF plan_id, status
+        ON user_subscriptions
+        FOR EACH ROW
+        EXECUTE FUNCTION check_active_subscription_plan();
+    END IF;
+END;
+$;
 
 
 -- Recreate the plan-deactivation guard function.
