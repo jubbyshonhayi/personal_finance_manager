@@ -113,6 +113,27 @@ textarea:focus-visible {
 }
 
 
+
+
+/* Footer */
+
+.site-footer {
+    margin-top: auto;
+    border-top: 1px solid #dee2e6;
+    background-color: #ffffff;
+    color: #6c757d;
+}
+
+.site-footer-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem;
+    font-size: 0.85rem;
+    text-align: center;
+}
+
+
 /* Flash messages */
 
 .flash-messages {
@@ -203,22 +224,4 @@ textarea:focus-visible {
     .site-footer-container {
         padding: 1rem 1.5rem;
     }
-}
-
-/* Footer */
-
-.site-footer {
-    margin-top: auto;
-    border-top: 1px solid #dee2e6;
-    background-color: #ffffff;
-    color: #6c757d;
-}
-
-.site-footer-container {
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 1rem;
-    font-size: 0.85rem;
-    text-align: center;
 }
