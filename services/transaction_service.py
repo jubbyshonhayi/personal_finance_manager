@@ -330,16 +330,49 @@ def get_transaction_summaries_for_user(
     user_id: UUID
 ) -> list[TransactionSummary]:
     """
-    Retrieves a user's transactions with their category names.
+    Retrieves the five most recent transactions for the dashboard.
 
-    Transactions are returned from newest to oldest.
+    Unlike the paginated transaction history, this query does not
+    need a separate count query.
     """
-    transactions, _ = get_transaction_history(
-        connection=connection,
-        user_id=user_id
-    )
+    rows = connection.execute(
+        """
+        SELECT
+            t.id,
+            t.user_id,
+            t.amount,
+            t.currency,
+            t.transaction_type,
+            t.category_id,
+            c.category_name,
+            t.description,
+            t.transaction_date
+        FROM transactions AS t
+        JOIN categories AS c
+            ON c.id = t.category_id
+        WHERE t.user_id = %s
+        ORDER BY
+            t.transaction_date DESC,
+            t.id DESC
+        LIMIT 5;
+        """,
+        (user_id,)
+    ).fetchall()
 
-    return transactions
+    return [
+        TransactionSummary(
+            id=row[0],
+            user_id=row[1],
+            amount=row[2],
+            currency=row[3],
+            transaction_type=TransactionType(row[4]),
+            category_id=row[5],
+            category_name=row[6],
+            description=row[7] if row[7] else None,
+            transaction_date=row[8]
+        )
+        for row in rows
+    ]
 
 
 def update_transaction(
