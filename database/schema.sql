@@ -39,7 +39,7 @@ CREATE TABLE categories (
     category_name VARCHAR(100) NOT NULL
         CHECK (btrim(category_name) <> ''),
 
-    transaction_type TEXT
+    transaction_type TEXT NOT NULL
         CHECK (transaction_type IN ('Income', 'Expense'))
 );
 
@@ -347,6 +347,62 @@ ON user_subscriptions (plan_id);
 CREATE UNIQUE INDEX user_subscriptions_one_active_idx
 ON user_subscriptions (user_id)
 WHERE status = 'active';
+
+
+CREATE OR REPLACE FUNCTION check_active_subscription_plan()
+RETURNS TRIGGER AS $
+DECLARE
+    plan_active BOOLEAN;
+BEGIN
+    IF NEW.status = 'active' THEN
+        SELECT is_active
+        INTO plan_active
+        FROM subscription_plans
+        WHERE id = NEW.plan_id;
+
+        IF plan_active IS DISTINCT FROM TRUE THEN
+            RAISE EXCEPTION
+                'Active subscription must use an active subscription plan';
+        END IF;
+    END IF;
+
+    RETURN NEW;
+END;
+$ LANGUAGE plpgsql;
+
+
+CREATE TRIGGER user_subscription_active_plan_check
+BEFORE INSERT OR UPDATE OF plan_id, status
+ON user_subscriptions
+FOR EACH ROW
+EXECUTE FUNCTION check_active_subscription_plan();
+
+
+CREATE OR REPLACE FUNCTION prevent_active_plan_deactivation()
+RETURNS TRIGGER AS $
+BEGIN
+    IF OLD.is_active = TRUE
+       AND NEW.is_active = FALSE
+       AND EXISTS (
+            SELECT 1
+            FROM user_subscriptions
+            WHERE plan_id = OLD.id
+              AND status = 'active'
+       ) THEN
+        RAISE EXCEPTION
+            'Subscription plan cannot be deactivated while active subscriptions exist';
+    END IF;
+
+    RETURN NEW;
+END;
+$ LANGUAGE plpgsql;
+
+
+CREATE TRIGGER subscription_plan_deactivation_check
+BEFORE UPDATE OF is_active
+ON subscription_plans
+FOR EACH ROW
+EXECUTE FUNCTION prevent_active_plan_deactivation();
 
 
 
