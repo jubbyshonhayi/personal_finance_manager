@@ -4,6 +4,18 @@ from models.transaction import Category
 from utils.enums import TransactionType
 
 
+def _row_to_category(row) -> Category:
+    """
+    Converts a database row into a Category model.
+    """
+    return Category(
+        id=row[0],
+        user_id=row[1],
+        category_name=row[2],
+        transaction_type=TransactionType(row[3])
+    )
+
+
 def get_categories_for_user(
     connection,
     user_id: UUID,
@@ -46,15 +58,7 @@ def get_categories_for_user(
             (user_id, transaction_type.value)
         ).fetchall()
 
-    return [
-        Category(
-            id=row[0],
-            user_id=row[1],
-            category_name=row[2],
-            transaction_type=TransactionType(row[3])
-        )
-        for row in rows
-    ]
+    return [_row_to_category(row) for row in rows]
 
 
 def create_category(
@@ -92,9 +96,4 @@ def create_category(
         )
     ).fetchone()
 
-    return Category(
-        id=row[0],
-        user_id=row[1],
-        category_name=row[2],
-        transaction_type=TransactionType(row[3])
-    )
+    return _row_to_category(row)
