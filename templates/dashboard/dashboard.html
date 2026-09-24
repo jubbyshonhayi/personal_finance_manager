@@ -22,6 +22,8 @@
                 <p>
                     Your financial activity in
                     <strong>{{ selected_currency }}</strong>
+                    ·
+                    <strong>{{ reporting_periods[selected_period] }}</strong>
                 </p>
             {% else %}
                 <p>
@@ -52,6 +54,26 @@
                             {% endif %}
                         >
                             {{ currency }}
+                        </option>
+                    {% endfor %}
+                </select>
+
+                <label for="period">
+                    Reporting Period
+                </label>
+
+                <select
+                    id="period"
+                    name="period"
+                >
+                    {% for period_key, period_label in reporting_periods.items() %}
+                        <option
+                            value="{{ period_key }}"
+                            {% if period_key == selected_period %}
+                                selected
+                            {% endif %}
+                        >
+                            {{ period_label }}
                         </option>
                     {% endfor %}
                 </select>
@@ -166,7 +188,8 @@
 
                     <div class="empty-state">
                         No expenses recorded in
-                        {{ selected_currency }} yet.
+                        {{ selected_currency }} for
+                        {{ reporting_periods[selected_period] | lower }}.
                     </div>
 
                 {% endif %}
