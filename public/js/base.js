@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 "aria-expanded",
                 String(!isExpanded)
             );
-            navbar.classList.toggle("show", !isExpanded);
+            navbar.classList.toggle("navbar-open", !isExpanded);
         });
     }
 
