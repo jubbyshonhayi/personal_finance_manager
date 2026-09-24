@@ -9,7 +9,7 @@ BEGIN;
 
 
 -- Category transaction types must never be NULL.
-DO $$
+DO $body$
 BEGIN
     IF EXISTS (
         SELECT 1
@@ -20,7 +20,7 @@ BEGIN
             'Cannot finalize category integrity: NULL transaction types exist';
     END IF;
 END;
-$$;
+$body$;
 
 
 ALTER TABLE categories
@@ -42,7 +42,7 @@ ON categories (
 -- Keep transaction/category integrity aligned with the final
 -- non-null transaction_type invariant.
 CREATE OR REPLACE FUNCTION check_transaction_category()
-RETURNS TRIGGER AS $$
+RETURNS TRIGGER AS $func$
 DECLARE
     category_owner UUID;
     category_type TEXT;
@@ -65,13 +65,13 @@ BEGIN
 
     RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
+$func$ LANGUAGE plpgsql;
 
 
 -- Recreate the active-subscription guard function before
 -- ensuring its trigger exists.
 CREATE OR REPLACE FUNCTION check_active_subscription_plan()
-RETURNS TRIGGER AS $
+RETURNS TRIGGER AS $func$
 DECLARE
     plan_active BOOLEAN;
 BEGIN
@@ -89,7 +89,7 @@ BEGIN
 
     RETURN NEW;
 END;
-$ LANGUAGE plpgsql;
+$func$ LANGUAGE plpgsql;
 
 
 -- The trigger may already exist from migration 003. Create it only
@@ -114,7 +114,7 @@ $;
 
 -- Recreate the plan-deactivation guard function.
 CREATE OR REPLACE FUNCTION prevent_active_plan_deactivation()
-RETURNS TRIGGER AS $$
+RETURNS TRIGGER AS $func$
 BEGIN
     IF OLD.is_active = TRUE
        AND NEW.is_active = FALSE
@@ -130,11 +130,11 @@ BEGIN
 
     RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
+$func$ LANGUAGE plpgsql;
 
 
 -- Create the deactivation trigger only when it is missing.
-DO $$
+DO $body$
 BEGIN
     IF NOT EXISTS (
         SELECT 1
@@ -149,12 +149,12 @@ BEGIN
         EXECUTE FUNCTION prevent_active_plan_deactivation();
     END IF;
 END;
-$$;
+$body$;
 
 
 -- Enforce the pricing/billing relationship when the constraint
 -- is not already present.
-DO $$
+DO $body$
 BEGIN
     IF NOT EXISTS (
         SELECT 1
@@ -171,7 +171,7 @@ BEGIN
         );
     END IF;
 END;
-$$;
+$body$;
 
 
 COMMIT;
