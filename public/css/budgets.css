@@ -104,6 +104,13 @@
     text-align: center;
 }
 
+.budget-form-empty-state {
+    margin: 0;
+    padding: 2rem 1rem;
+    border: 0;
+    box-shadow: none;
+}
+
 .budget-empty-icon {
     display: flex;
     align-items: center;
@@ -191,6 +198,7 @@
     outline-offset: 2px;
 }
 
+.budget-field-hint,
 .budget-input-with-hint p {
     margin: 0.4rem 0 0;
     color: #6c757d;
