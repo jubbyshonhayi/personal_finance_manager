@@ -10,9 +10,10 @@ from flask import (
 from database.connection import pool
 
 from services.financial_service import (
+    REPORTING_PERIODS,
     get_available_currencies,
-    get_category_breakdown,
-    get_financial_summary,
+    get_financial_report,
+    get_reporting_period_dates,
 )
 
 from services.transaction_service import (
@@ -32,10 +33,25 @@ def dashboard_page():
     """
     Displays the user's financial dashboard.
 
-    Financial calculations are performed for the selected currency,
-    while recent transactions include all currencies.
+    Financial calculations are performed for the selected
+    currency and reporting period, while recent transactions
+    include all currencies and remain unaffected by the period.
     """
     user_id = UUID(session["user_id"])
+
+    requested_period = request.args.get(
+        "period",
+        "all_time"
+    )
+
+    if requested_period in REPORTING_PERIODS:
+        selected_period = requested_period
+    else:
+        selected_period = "all_time"
+
+    start_date, end_date = get_reporting_period_dates(
+        period=selected_period
+    )
 
     with pool.connection() as connection:
         currencies = get_available_currencies(
@@ -53,6 +69,8 @@ def dashboard_page():
                 "dashboard/dashboard.html",
                 currencies=[],
                 selected_currency=None,
+                reporting_periods=REPORTING_PERIODS,
+                selected_period=selected_period,
                 summary=None,
                 net_amount=None,
                 category_breakdown=[],
@@ -67,30 +85,27 @@ def dashboard_page():
         else:
             selected_currency = currencies[0]
 
-        summary = get_financial_summary(
-            connection=connection,
-            user_id=user_id,
-            currency=selected_currency
-        )
-
-        category_breakdown = get_category_breakdown(
+        report = get_financial_report(
             connection=connection,
             user_id=user_id,
             currency=selected_currency,
-            transaction_type=TransactionType.EXPENSE
+            start_date=start_date,
+            end_date=end_date
         )
 
     net_amount = (
-        summary.total_income - summary.total_expense
+        report.total_income - report.total_expense
     )
 
     return render_template(
         "dashboard/dashboard.html",
         currencies=currencies,
         selected_currency=selected_currency,
-        summary=summary,
+        reporting_periods=REPORTING_PERIODS,
+        selected_period=selected_period,
+        summary=report,
         net_amount=net_amount,
-        category_breakdown=category_breakdown,
+        category_breakdown=report.category_breakdowns,
         recent_transactions=recent_transactions,
         TransactionType=TransactionType
     )
