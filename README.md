@@ -1,203 +1,161 @@
-💰 Personal Finance Manager + Insights
+# Personal Finance Manager + Insights
 
-A command-line Personal Finance Manager built with Python that helps users record, manage, search, filter, and analyze their financial transactions.
+A web-based personal finance application built with Python and Flask. Users can manage income and expenses, organize transactions into categories, set budgets, view financial reports, and securely manage their accounts.
 
-This project was developed as part of a Python Programming Internship while applying software engineering principles such as modular architecture, separation of concerns, reusable components, and robust input validation.
+## Features
 
-⸻
+- User registration and login
+- Password hashing with scrypt
+- Password reset by email
+- CSRF protection
+- Authentication rate limiting
+- Transaction creation, editing, deletion, search, filtering, sorting, and pagination
+- User-owned and system categories
+- Monthly budgets and budget progress
+- Financial summaries and category expense reports
+- PostgreSQL database support
+- Responsive web interface
+- Security headers and secure session cookies
 
-🚀 Features
+## Technology
 
-Transaction Management
+- Python
+- Flask
+- PostgreSQL
+- Psycopg 3
+- Flask-WTF
+- Brevo transactional email
+- HTML, CSS, JavaScript
 
-* Add new transactions
-* Update existing transactions
-* Delete transactions
-* View all transactions
+## Project Structure
 
-Transaction Search
-
-Search transactions by:
-
-* Category
-* Description
-* Transaction Type
-* Year
-* Month
-
-Transaction Filtering
-
-Filter transactions by:
-
-* Income
-* Expense
-* Date Range
-* Amount Range
-
-Financial Reports
-
-Generate:
-
-* Monthly Financial Reports
-* Yearly Financial Reports
-
-Each report includes:
-
-* Total Income
-* Total Expenses
-* Balance
-* Transaction Count
-* Financial Status (Surplus, Overspending, Break Even)
-
-Financial Summary
-
-View an overall summary including:
-
-* Total Income
-* Total Expenses
-* Current Balance
-* Number of Transactions
-
-User Experience
-
-* Paginated transaction display
-* Numbered transaction listings
-* Consistent transaction formatting
-* Robust input validation
-* Friendly error messages
-
-⸻
-
-🏗️ Project Structure
-
+```
 personal_finance_manager/
-│
-├── main.py
-├── README.md
-├── .gitignore
-│
-├── menus/
-│   ├── menu_helpers.py
-│   └── transaction_menu.py
-│
+├── app.py
+├── config.py
+├── database/
+│   ├── connection.py
+│   ├── init_db.py
+│   ├── schema.sql
+│   └── seed.sql
 ├── models/
-│   ├── financial_summary.py
-│   ├── transaction.py
-│   └── user.py
-│
+├── routes/
 ├── services/
-│   └── transaction_service.py
-│
-├── storage/
-│   ├── json_storage.py
-│   └── files/
-│       ├── transactions.json
-│       └── users.json
-│
-└── utils/
-    ├── constants.py
-    ├── enums.py
-    └── validators.py
+├── utils/
+├── templates/
+├── public/
+├── requirements.txt
+└── vercel.json
+```
 
-⸻
+The application follows a layered architecture:
 
-🛠️ Technologies Used
-
-* Python 3
-* Pandas
-* JSON File Storage
-* Object-Oriented Programming (OOP)
-
-⸻
-
-🏛️ Software Architecture
-
-The project follows a layered architecture:
-
-User
-   ↓
-Menus
+```
+Routes
    ↓
 Services
    ↓
-Storage
-   ↓
-JSON Files
+PostgreSQL
+```
 
-Each layer has a single responsibility:
+Routes handle HTTP concerns, services contain application and database logic, and models represent application data.
 
-* Menus — User interaction and input collection
-* Services — Business logic and data processing
-* Storage — Reading and writing JSON files
-* Models — Data representation
-* Utilities — Shared constants, validators, and enumerations
+## Local Setup
 
-⸻
+Create and activate a virtual environment, then install the dependencies:
 
-▶️ Running the Project
+```bash
+python -m venv .venv
+```
 
-Clone the repository:
+Windows PowerShell:
 
-git clone <repository-url>
-
-Navigate into the project:
-
-cd personal_finance_manager
+```powershell
+.\.venv\Scripts\Activate.ps1
+```
 
 Install dependencies:
 
-pip install pandas
+```bash
+pip install -r requirements.txt
+```
 
-Run the application:
+Create a `.env` file with the required configuration:
 
-python main.py
+```text
+DATABASE_URL=your_postgresql_connection_string
+SECRET_KEY=your_secret_key
+FLASK_DEBUG=true
+SESSION_COOKIE_SECURE=false
 
-⸻
+BREVO_API_KEY=your_brevo_api_key
+BREVO_SENDER_EMAIL=your_verified_sender_email
+BREVO_SENDER_NAME=Personal Finance Manager
+```
 
-📷 Screenshots & Demo
+Initialize the database:
 
-Screenshots and a demonstration video will be added in future updates.
+```bash
+python -m database.init_db
+```
 
-⸻
+Run locally:
 
-🔮 Future Improvements
+```bash
+flask --app app run --debug
+```
 
-Planned enhancements include:
+The Flask development server is for local development only. Production deployments should use the hosting platform's production runtime rather than `app.run()`.
 
-* Transaction sorting
-* Spending insights and analytics
-* Category-wise spending reports
-* Monthly spending trends
-* Largest income and expense analysis
-* Average income and expense calculations
-* Charts and visualizations
-* Database support (SQLite/PostgreSQL)
-* User authentication and multi-user login
-* Export reports (CSV/PDF)
+## Production Configuration
 
-⸻
+At minimum, production must provide:
 
-📚 Learning Outcomes
+- `DATABASE_URL`
+- `SECRET_KEY`
+- `FLASK_DEBUG=false`
+- `BREVO_API_KEY`
+- `BREVO_SENDER_EMAIL`
 
-This project provided practical experience in:
+`SESSION_COOKIE_SECURE` defaults to enabled whenever debug mode is disabled. It can still be explicitly configured when required by the deployment environment.
 
-* Object-Oriented Programming
-* Layered Software Architecture
-* Separation of Concerns
-* JSON File Handling
-* Data Analysis with Pandas
-* Input Validation
-* Exception Handling
-* Modular Software Design
-* Code Reusability
-* Command-Line Application Development
+The application also limits request bodies to 1 MB by default through `MAX_CONTENT_LENGTH`. This can be overridden with an environment variable when a deployment requires a different limit.
 
-⸻
+Never commit `.env` or production credentials to the repository.
 
-👨‍💻 Author
+## Database
+
+The authoritative database schema is:
+
+```
+database/schema.sql
+```
+
+Initial system data is defined in:
+
+```
+database/seed.sql
+```
+
+Database changes should be reviewed as migrations/schema changes rather than relying on application startup to modify production data.
+
+## Security
+
+The application currently includes:
+
+- Secure password hashing
+- CSRF protection
+- Secure session-cookie settings
+- Content Security Policy
+- HSTS when HTTPS session cookies are enabled
+- Authentication and password-reset rate limiting
+- Parameterized SQL queries
+- Database constraints and ownership checks
+- Generic error responses for unexpected server errors
+- Request-size limits
+
+## Author
 
 Jubilent Shonhayi
 
 Computer Science Student
-
-Developed as part of a Python Programming Internship.
