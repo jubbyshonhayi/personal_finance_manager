@@ -26,6 +26,7 @@ from services.budget_service import (
     update_budget,
 )
 from services.category_service import get_categories_for_user
+from services.financial_service import get_available_currencies
 from utils.auth import login_required
 from utils.currencies import SUPPORTED_CURRENCIES
 from utils.enums import TransactionType
@@ -96,6 +97,29 @@ def _parse_budget_form() -> tuple[UUID, str, Decimal] | None:
     return category_id, currency, monthly_limit
 
 
+def _get_transaction_currencies(
+    connection,
+    user_id: UUID
+) -> dict:
+    """
+    Returns supported currencies currently used by the user.
+
+    The returned mapping preserves the application's currency
+    metadata while limiting choices to currencies represented
+    by the user's transactions.
+    """
+    currency_codes = get_available_currencies(
+        connection=connection,
+        user_id=user_id
+    )
+
+    return {
+        code: SUPPORTED_CURRENCIES[code]
+        for code in currency_codes
+        if code in SUPPORTED_CURRENCIES
+    }
+
+
 def _budget_form_redirect(
     endpoint: str,
     budget_id: UUID | None = None
@@ -143,6 +167,9 @@ def budgets_page():
 def add_budget():
     """
     Displays the add-budget form and handles submissions.
+
+    Budget currencies are restricted to currencies already used
+    by the user's transactions.
     """
     user_id = UUID(session["user_id"])
 
@@ -156,6 +183,17 @@ def add_budget():
 
         try:
             with pool.connection() as connection:
+                available_currencies = _get_transaction_currencies(
+                    connection=connection,
+                    user_id=user_id
+                )
+
+                if currency not in available_currencies:
+                    raise ValueError(
+                        "You can only create budgets in currencies "
+                        "used by your transactions."
+                    )
+
                 create_budget(
                     connection=connection,
                     user_id=user_id,
@@ -198,10 +236,24 @@ def add_budget():
             transaction_type=TransactionType.EXPENSE
         )
 
+        currencies = _get_transaction_currencies(
+            connection=connection,
+            user_id=user_id
+        )
+
+    selected_currency = session.get("dashboard_currency")
+
+    if selected_currency not in currencies:
+        selected_currency = next(
+            iter(currencies),
+            None
+        )
+
     return render_template(
         "budgets/add_budget.html",
         categories=categories,
-        currencies=SUPPORTED_CURRENCIES
+        currencies=currencies,
+        selected_currency=selected_currency
     )
 
 
@@ -250,11 +302,21 @@ def edit_budget(budget_id):
                 transaction_type=TransactionType.EXPENSE
             )
 
+            currencies = _get_transaction_currencies(
+                connection=connection,
+                user_id=user_id
+            )
+
+        currencies.setdefault(
+            existing_budget.currency,
+            SUPPORTED_CURRENCIES[existing_budget.currency]
+        )
+
         return render_template(
             "budgets/edit_budget.html",
             budget=existing_budget,
             categories=categories,
-            currencies=SUPPORTED_CURRENCIES
+            currencies=currencies
         )
 
     values = _parse_budget_form()
