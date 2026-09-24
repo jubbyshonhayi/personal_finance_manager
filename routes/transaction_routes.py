@@ -485,7 +485,7 @@ def edit_transaction(transaction_id):
 
     if currency not in SUPPORTED_CURRENCIES:
         flash(
-            "Invalid currency.",
+            "Please select a valid currency.",
             "danger"
         )
         return redirect(
