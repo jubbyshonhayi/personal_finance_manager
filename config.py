@@ -62,3 +62,10 @@ LOGIN_IP_LIMIT = int(
         "20"
     )
 )
+
+MAX_CONTENT_LENGTH = int(
+    os.getenv(
+        "MAX_CONTENT_LENGTH",
+        str(1024 * 1024)
+    )
+)

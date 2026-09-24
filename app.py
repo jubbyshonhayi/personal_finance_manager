@@ -5,6 +5,7 @@ from flask_wtf.csrf import CSRFProtect
 
 from config import (
     DEBUG,
+    MAX_CONTENT_LENGTH,
     SECRET_KEY,
     SESSION_COOKIE_HTTPONLY,
     SESSION_COOKIE_SAMESITE,
@@ -29,6 +30,7 @@ app = Flask(
 )
 
 app.config["SECRET_KEY"] = SECRET_KEY
+app.config["MAX_CONTENT_LENGTH"] = MAX_CONTENT_LENGTH
 
 # Session cookie security settings.
 app.config["SESSION_COOKIE_HTTPONLY"] = SESSION_COOKIE_HTTPONLY
