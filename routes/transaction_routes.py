@@ -424,7 +424,7 @@ def edit_transaction(transaction_id):
             "danger"
         )
         return redirect(
-            url_for("dashboard.dashboard_page")
+            url_for("transaction.transactions_page")
         )
 
     if request.method == "GET":
@@ -441,7 +441,7 @@ def edit_transaction(transaction_id):
                     "danger"
                 )
                 return redirect(
-                    url_for("dashboard.dashboard_page")
+                    url_for("transaction.transactions_page")
                 )
 
             categories = get_categories_for_user(
@@ -675,7 +675,7 @@ def edit_transaction(transaction_id):
             "danger"
         )
         return redirect(
-            url_for("dashboard.dashboard_page")
+            url_for("transaction.transactions_page")
         )
 
     flash(
@@ -684,7 +684,7 @@ def edit_transaction(transaction_id):
     )
 
     return redirect(
-        url_for("dashboard.dashboard_page")
+        url_for("transaction.transactions_page")
     )
 
 
@@ -708,7 +708,7 @@ def delete_transaction_page(transaction_id):
             "danger"
         )
         return redirect(
-            url_for("dashboard.dashboard_page")
+            url_for("transaction.transactions_page")
         )
 
     with pool.connection() as connection:
@@ -724,7 +724,7 @@ def delete_transaction_page(transaction_id):
                 "danger"
             )
             return redirect(
-                url_for("dashboard.dashboard_page")
+                url_for("transaction.transactions_page")
             )
 
         if request.method == "GET":
@@ -745,7 +745,7 @@ def delete_transaction_page(transaction_id):
             "danger"
         )
         return redirect(
-            url_for("dashboard.dashboard_page")
+            url_for("transaction.transactions_page")
         )
 
     flash(
@@ -754,7 +754,7 @@ def delete_transaction_page(transaction_id):
     )
 
     return redirect(
-        url_for("dashboard.dashboard_page")
+        url_for("transaction.transactions_page")
     )
 
 
