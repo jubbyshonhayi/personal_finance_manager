@@ -44,6 +44,9 @@ textarea {
 }
 
 .navbar-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
     width: 100%;
     max-width: 1200px;
     margin: 0 auto;
@@ -58,6 +61,7 @@ textarea {
 }
 
 .navbar-toggler {
+    margin-left: auto;
     border-color: #ced4da;
 }
 
@@ -66,6 +70,7 @@ textarea {
 }
 
 .navbar-links {
+    flex-basis: 100%;
     margin-top: 0.75rem;
 }
 
@@ -311,7 +316,9 @@ textarea:focus-visible {
     }
 
     .navbar-links {
+        flex-basis: auto;
         margin-top: 0;
+        margin-left: auto;
     }
 
     .navbar-links-content {
