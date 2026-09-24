@@ -115,7 +115,7 @@
                         {% for category in categories %}
                             <option
                                 value="{{ category.id }}"
-                                data-type="{{ category.transaction_type.value if category.transaction_type else 'Both' }}"
+                                data-type="{{ category.transaction_type.value }}"
                                 {% if category.id == transaction.category_id %}
                                     selected
                                 {% endif %}
