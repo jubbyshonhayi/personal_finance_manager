@@ -5,7 +5,7 @@ CREATE TABLE users (
     username  VARCHAR(30) NOT NULL
         CHECK (btrim(username) <> ''),
 
-    email VARCHAR(254) TEXT NOT NULL
+    email VARCHAR(254) NOT NULL
         CHECK (btrim(email) <> ''),
 
     -- Stores a password hash, never the user's raw password.
@@ -52,15 +52,12 @@ ON categories (user_id);
 
 -- Prevents duplicate category names for the same owner
 -- and transaction type.
---
--- NULL transaction types are treated as equal so a category
--- such as "Other" cannot be duplicated for the same owner.
 CREATE UNIQUE INDEX categories_user_type_name_unique
 ON categories (
     user_id,
     transaction_type,
     LOWER(category_name)
-) NULLS NOT DISTINCT;
+);
 
 
 -- Stores individual financial transactions made by users.
@@ -104,8 +101,7 @@ ON transactions (category_id);
 --   1. a system category, or
 --   2. a private category owned by the same user.
 --
--- Also ensures that a category restricted to Income or Expense
--- can only be used by transactions of the matching type.
+-- Ensures that the transaction type matches the category type.
 CREATE OR REPLACE FUNCTION check_transaction_category()
 RETURNS TRIGGER AS $$
 DECLARE
@@ -125,8 +121,7 @@ BEGIN
             'Transaction cannot use another user''s category';
     END IF;
 
-    IF category_type IS NOT NULL
-       AND category_type <> NEW.transaction_type THEN
+    IF category_type <> NEW.transaction_type THEN
         RAISE EXCEPTION
             'Transaction type does not match category type';
     END IF;
@@ -286,6 +281,12 @@ CREATE TABLE subscription_plans (
 
     billing_interval TEXT
         CHECK (billing_interval IN ('monthly', 'yearly')),
+
+    CHECK (
+        (price = 0 AND billing_interval IS NULL)
+        OR
+        (price > 0 AND billing_interval IS NOT NULL)
+    ),
 
     is_active BOOLEAN NOT NULL DEFAULT TRUE
 );
