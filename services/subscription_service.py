@@ -1,6 +1,7 @@
 from uuid import UUID
 
 from models.subscriptions import UserSubscription
+from utils.enums import SubscriptionStatus
 
 
 def create_free_subscription(
@@ -52,5 +53,5 @@ def create_free_subscription(
         plan_id=row[2],
         start_date=row[3],
         end_date=row[4],
-        status=row[5]
+        status=SubscriptionStatus(row[5])
     )
