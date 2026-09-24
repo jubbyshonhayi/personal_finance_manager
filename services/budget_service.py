@@ -268,13 +268,16 @@ def get_budgets_for_user(
 def get_budget_progress_for_user(
     connection,
     user_id: UUID,
+    currency: str | None = None,
     today: date | None = None
 ) -> list[BudgetProgress]:
     """
-    Calculates current-month spending against every user budget.
+    Calculates current-month spending against a user's budgets.
 
-    Budgets with no matching transactions are included with zero
-    spending. Transaction aggregation is performed by PostgreSQL.
+    When a currency is supplied, only budgets in that currency
+    are included. Budgets with no matching transactions are
+    included with zero spending. Transaction aggregation is
+    performed by PostgreSQL.
     """
     month_start, month_end = _current_month_range(today)
 
@@ -299,6 +302,7 @@ def get_budget_progress_for_user(
            AND t.transaction_date >= %s
            AND t.transaction_date < %s
         WHERE b.user_id = %s
+          AND (%s IS NULL OR b.currency = %s)
         GROUP BY
             b.id,
             b.user_id,
@@ -315,7 +319,9 @@ def get_budget_progress_for_user(
             TransactionType.EXPENSE.value,
             month_start,
             month_end,
-            user_id
+            user_id,
+            currency,
+            currency
         )
     ).fetchall()
 
