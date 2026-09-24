@@ -1,5 +1,7 @@
+import csv
 from datetime import date
 from decimal import Decimal, DecimalException
+from io import StringIO
 from uuid import UUID
 
 from utils.auth import login_required
@@ -8,6 +10,7 @@ from utils.enums import TransactionType
 
 from flask import (
     Blueprint,
+    Response,
     flash,
     redirect,
     render_template,
@@ -34,11 +37,78 @@ from services.transaction_service import (
     delete_transaction,
     get_transaction_for_user,
     get_transaction_history,
+    get_transactions_for_export,
     update_transaction,
 )
 
 
 transaction = Blueprint("transaction", __name__)
+
+
+def _get_transaction_filters() -> dict:
+    """
+    Parses and validates transaction history filters from the request.
+    """
+    search = request.args.get("search", "").strip()
+    transaction_type = request.args.get("type", "").strip()
+    currency = request.args.get("currency", "").strip().upper()
+    category_id = request.args.get("category", "").strip()
+    start_date = request.args.get("start_date", "").strip()
+    end_date = request.args.get("end_date", "").strip()
+    sort = request.args.get("sort", "date_desc").strip()
+
+    selected_transaction_type = None
+    if transaction_type:
+        try:
+            selected_transaction_type = TransactionType(transaction_type)
+        except ValueError:
+            transaction_type = ""
+
+    if currency and currency not in SUPPORTED_CURRENCIES:
+        currency = ""
+
+    selected_category_id = None
+    if category_id:
+        try:
+            selected_category_id = UUID(category_id)
+        except ValueError:
+            category_id = ""
+
+    selected_start_date = None
+    if start_date:
+        try:
+            selected_start_date = date.fromisoformat(start_date)
+        except ValueError:
+            start_date = ""
+
+    selected_end_date = None
+    if end_date:
+        try:
+            selected_end_date = date.fromisoformat(end_date)
+        except ValueError:
+            end_date = ""
+
+    if sort not in TRANSACTION_HISTORY_SORT_OPTIONS:
+        sort = "date_desc"
+
+    return {
+        "search": search,
+        "transaction_type": selected_transaction_type,
+        "currency": currency or None,
+        "category_id": selected_category_id,
+        "start_date": selected_start_date,
+        "end_date": selected_end_date,
+        "sort": sort,
+        "display": {
+            "search": search,
+            "transaction_type": transaction_type,
+            "currency": currency,
+            "category_id": category_id,
+            "start_date": start_date,
+            "end_date": end_date,
+            "sort": sort
+        }
+    }
 
 
 @transaction.route("/transactions")
@@ -49,91 +119,9 @@ def transactions_page():
     sorting, searching, and pagination.
     """
     user_id = UUID(session["user_id"])
+    filters = _get_transaction_filters()
 
-    search = request.args.get(
-        "search",
-        ""
-    ).strip()
-
-    transaction_type = request.args.get(
-        "type",
-        ""
-    ).strip()
-
-    currency = request.args.get(
-        "currency",
-        ""
-    ).strip().upper()
-
-    category_id = request.args.get(
-        "category",
-        ""
-    ).strip()
-
-    start_date = request.args.get(
-        "start_date",
-        ""
-    ).strip()
-
-    end_date = request.args.get(
-        "end_date",
-        ""
-    ).strip()
-
-    sort = request.args.get(
-        "sort",
-        "date_desc"
-    ).strip()
-
-    page_value = request.args.get(
-        "page",
-        "1"
-    ).strip()
-
-    selected_transaction_type = None
-
-    if transaction_type:
-        try:
-            selected_transaction_type = TransactionType(
-                transaction_type
-            )
-        except ValueError:
-            transaction_type = ""
-            selected_transaction_type = None
-
-    if currency and currency not in SUPPORTED_CURRENCIES:
-        currency = ""
-
-    selected_category_id = None
-
-    if category_id:
-        try:
-            selected_category_id = UUID(category_id)
-        except ValueError:
-            category_id = ""
-            selected_category_id = None
-
-    selected_start_date = None
-
-    if start_date:
-        try:
-            selected_start_date = date.fromisoformat(start_date)
-        except ValueError:
-            start_date = ""
-            selected_start_date = None
-
-    selected_end_date = None
-
-    if end_date:
-        try:
-            selected_end_date = date.fromisoformat(end_date)
-        except ValueError:
-            end_date = ""
-            selected_end_date = None
-
-    if sort not in TRANSACTION_HISTORY_SORT_OPTIONS:
-        sort = "date_desc"
-
+    page_value = request.args.get("page", "1").strip()
     try:
         page = int(page_value)
     except ValueError:
@@ -150,13 +138,13 @@ def transactions_page():
         transactions, total_count = get_transaction_history(
             connection=connection,
             user_id=user_id,
-            search=search or None,
-            transaction_type=selected_transaction_type,
-            currency=currency or None,
-            category_id=selected_category_id,
-            start_date=selected_start_date,
-            end_date=selected_end_date,
-            sort=sort,
+            search=filters["search"] or None,
+            transaction_type=filters["transaction_type"],
+            currency=filters["currency"],
+            category_id=filters["category_id"],
+            start_date=filters["start_date"],
+            end_date=filters["end_date"],
+            sort=filters["sort"],
             page=page,
             per_page=DEFAULT_TRANSACTION_PAGE_SIZE
         )
@@ -175,13 +163,13 @@ def transactions_page():
             transactions, total_count = get_transaction_history(
                 connection=connection,
                 user_id=user_id,
-                search=search or None,
-                transaction_type=selected_transaction_type,
-                currency=currency or None,
-                category_id=selected_category_id,
-                start_date=selected_start_date,
-                end_date=selected_end_date,
-                sort=sort,
+                search=filters["search"] or None,
+                transaction_type=filters["transaction_type"],
+                currency=filters["currency"],
+                category_id=filters["category_id"],
+                start_date=filters["start_date"],
+                end_date=filters["end_date"],
+                sort=filters["sort"],
                 page=page,
                 per_page=DEFAULT_TRANSACTION_PAGE_SIZE
             )
@@ -203,14 +191,56 @@ def transactions_page():
         currencies=SUPPORTED_CURRENCIES,
         transaction_types=TransactionType,
         pagination=pagination,
-        filters={
-            "search": search,
-            "transaction_type": transaction_type,
-            "currency": currency,
-            "category_id": category_id,
-            "start_date": start_date,
-            "end_date": end_date,
-            "sort": sort
+        filters=filters["display"]
+    )
+
+
+@transaction.route("/transactions/export")
+@login_required
+def export_transactions():
+    """Exports the user's filtered transactions as a CSV file."""
+    user_id = UUID(session["user_id"])
+    filters = _get_transaction_filters()
+
+    with pool.connection() as connection:
+        transactions = get_transactions_for_export(
+            connection=connection,
+            user_id=user_id,
+            search=filters["search"] or None,
+            transaction_type=filters["transaction_type"],
+            currency=filters["currency"],
+            category_id=filters["category_id"],
+            start_date=filters["start_date"],
+            end_date=filters["end_date"],
+            sort=filters["sort"]
+        )
+
+    output = StringIO()
+    writer = csv.writer(output)
+    writer.writerow([
+        "Date",
+        "Description",
+        "Category",
+        "Type",
+        "Currency",
+        "Amount"
+    ])
+
+    for transaction_item in transactions:
+        writer.writerow([
+            transaction_item.transaction_date,
+            transaction_item.description or "",
+            transaction_item.category_name,
+            transaction_item.transaction_type.value,
+            transaction_item.currency,
+            transaction_item.amount
+        ])
+
+    return Response(
+        output.getvalue(),
+        mimetype="text/csv",
+        headers={
+            "Content-Disposition": "attachment; filename=transactions.csv"
         }
     )
 
