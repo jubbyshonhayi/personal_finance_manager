@@ -12,8 +12,13 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
 
-        window.setTimeout(() => {
-            message.classList.add("flash-message-hidden");
-        }, 6000);
+        if (
+            message.classList.contains("flash-success") ||
+            message.classList.contains("flash-info")
+        ) {
+            window.setTimeout(() => {
+                message.classList.add("flash-message-hidden");
+            }, 6000);
+        }
     }
 });
