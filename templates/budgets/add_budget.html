@@ -21,86 +21,118 @@
                 </p>
             </header>
 
-            <form method="POST">
-                <input
-                    type="hidden"
-                    name="csrf_token"
-                    value="{{ csrf_token() }}"
-                >
+            {% if currencies %}
 
-                <div class="budget-form-group">
-                    <label for="category_id">
-                        Expense Category
-                    </label>
-
-                    <select
-                        id="category_id"
-                        name="category_id"
-                        required
+                <form method="POST">
+                    <input
+                        type="hidden"
+                        name="csrf_token"
+                        value="{{ csrf_token() }}"
                     >
-                        <option value="" selected disabled>
-                            Select a category
-                        </option>
 
-                        {% for category in categories %}
-                            <option value="{{ category.id }}">
-                                {{ category.category_name }}
-                            </option>
-                        {% endfor %}
-                    </select>
-                </div>
+                    <div class="budget-form-group">
+                        <label for="category_id">
+                            Expense Category
+                        </label>
 
-                <div class="budget-form-group">
-                    <label for="currency">
-                        Currency
-                    </label>
-
-                    <select
-                        id="currency"
-                        name="currency"
-                        required
-                    >
-                        <option value="" selected disabled>
-                            Select currency
-                        </option>
-
-                        {% for code, currency in currencies.items() %}
-                            <option value="{{ code }}">
-                                {{ code }} - {{ currency.name }}
-                            </option>
-                        {% endfor %}
-                    </select>
-                </div>
-
-                <div class="budget-form-group">
-                    <label for="monthly_limit">
-                        Monthly Limit
-                    </label>
-
-                    <div class="budget-input-with-hint">
-                        <input
-                            type="number"
-                            id="monthly_limit"
-                            name="monthly_limit"
-                            min="0.01"
-                            step="0.01"
-                            inputmode="decimal"
+                        <select
+                            id="category_id"
+                            name="category_id"
                             required
                         >
+                            <option value="" selected disabled>
+                                Select a category
+                            </option>
 
-                        <p>
-                            This limit applies each month.
+                            {% for category in categories %}
+                                <option value="{{ category.id }}">
+                                    {{ category.category_name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="budget-form-group">
+                        <label for="currency">
+                            Currency
+                        </label>
+
+                        <select
+                            id="currency"
+                            name="currency"
+                            required
+                        >
+                            {% for code, currency in currencies.items() %}
+                                <option
+                                    value="{{ code }}"
+                                    {% if code == selected_currency %}
+                                        selected
+                                    {% endif %}
+                                >
+                                    {{ code }} - {{ currency.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+
+                        <p class="budget-field-hint">
+                            Only currencies used by your transactions are
+                            available for budgeting.
                         </p>
                     </div>
+
+                    <div class="budget-form-group">
+                        <label for="monthly_limit">
+                            Monthly Limit
+                        </label>
+
+                        <div class="budget-input-with-hint">
+                            <input
+                                type="number"
+                                id="monthly_limit"
+                                name="monthly_limit"
+                                min="0.01"
+                                step="0.01"
+                                inputmode="decimal"
+                                required
+                            >
+
+                            <p>
+                                This limit applies each month.
+                            </p>
+                        </div>
+                    </div>
+
+                    <button
+                        type="submit"
+                        class="button button-primary"
+                    >
+                        Create Budget
+                    </button>
+                </form>
+
+            {% else %}
+
+                <div class="budget-empty-state budget-form-empty-state">
+                    <div class="budget-empty-icon" aria-hidden="true">
+                        $
+                    </div>
+
+                    <h2>No transaction currencies yet</h2>
+
+                    <p>
+                        Add a transaction first. Once you use a currency,
+                        you can create budgets for it.
+                    </p>
+
+                    <a
+                        class="button button-primary"
+                        href="{{ url_for('transaction.add_transaction') }}"
+                    >
+                        Add Transaction
+                    </a>
                 </div>
 
-                <button
-                    type="submit"
-                    class="button button-primary"
-                >
-                    Create Budget
-                </button>
-            </form>
+            {% endif %}
 
             <a
                 class="back-link"
