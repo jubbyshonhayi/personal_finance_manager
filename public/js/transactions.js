@@ -20,8 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const validCategories = categories.filter((category) => {
                 return (
-                    category.type === selectedType ||
-                    category.type === "Both"
+                    category.type === selectedType
                 );
             });
 
