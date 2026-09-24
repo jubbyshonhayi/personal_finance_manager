@@ -244,18 +244,17 @@ def login():
             password,
             user.password_hash
         ):
-            with pool.connection() as connection:
-                record_rate_limit_failure(
-                    connection=connection,
-                    scope="login_identifier",
-                    identifier=identifier
-                )
+            record_rate_limit_failure(
+                connection=connection,
+                scope="login_identifier",
+                identifier=identifier
+            )
 
-                record_rate_limit_failure(
-                    connection=connection,
-                    scope="login_ip",
-                    identifier=client_ip
-                )
+            record_rate_limit_failure(
+                connection=connection,
+                scope="login_ip",
+                identifier=client_ip
+            )
 
             flash(
                 "Invalid username/email or password.",
