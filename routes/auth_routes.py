@@ -216,7 +216,7 @@ def login():
 
         if not identifier or not password:
             flash(
-                "Username/email and password are required.",
+                "Username or email and password are required.",
                 "danger"
             )
             return redirect(url_for("auth.login"))
@@ -225,14 +225,14 @@ def login():
 
         if not identifier:
             flash(
-                "Username/email and password are required.",
+                "Username or email and password are required.",
                 "danger"
             )
             return redirect(url_for("auth.login"))
 
         if len(identifier) > MAX_EMAIL_LENGTH:
             flash(
-                "Username/email is too long.",
+                "Username or email is too long.",
                 "danger"
             )
             return redirect(url_for("auth.login"))

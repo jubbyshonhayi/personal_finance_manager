@@ -57,11 +57,11 @@ def _parse_budget_form() -> tuple[UUID, str, Decimal] | None:
     try:
         category_id = UUID(category_id)
     except ValueError:
-        flash("Invalid category.", "danger")
+        flash("Please select a valid category.", "danger")
         return None
 
     if currency not in SUPPORTED_CURRENCIES:
-        flash("Invalid currency.", "danger")
+        flash("Please select a valid currency.", "danger")
         return None
 
     try:
