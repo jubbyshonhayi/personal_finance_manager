@@ -11,6 +11,9 @@ def get_categories_for_user(
 ) -> list[Category]:
     """
     Retrieves system and user-owned categories available to a user.
+
+    When a transaction type is supplied, only categories for that
+    transaction type are returned.
     """
     if transaction_type is None:
         rows = connection.execute(
@@ -37,10 +40,7 @@ def get_categories_for_user(
                 transaction_type
             FROM categories
             WHERE (user_id IS NULL OR user_id = %s)
-              AND (
-                    transaction_type IS NULL
-                    OR transaction_type = %s
-              )
+              AND transaction_type = %s
             ORDER BY category_name;
             """,
             (user_id, transaction_type.value)
