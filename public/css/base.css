@@ -131,7 +131,6 @@ textarea:focus-visible {
 
 
 /* Shared page components */
-
 .page-header {
     display: flex;
     flex-direction: column;
