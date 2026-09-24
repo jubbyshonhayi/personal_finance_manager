@@ -528,7 +528,29 @@
                 <div class="empty-state">
 
                     <p>
-                        No transactions match your current filters.
+                        {% if pagination.total_count == 0 and (filters.search or filters.transaction_type or filters.currency or filters.category_id or filters.start_date or filters.end_date or filters.sort != "date_desc") %}
+                        <p>
+                            No transactions match your current filters.
+                        </p>
+
+                        <a
+                            href="{{ url_for('transaction.transactions_page') }}"
+                            class="button button-secondary"
+                        >
+                            Clear Filters
+                        </a>
+                    {% else %}
+                        <p>
+                            You haven't added any transactions yet.
+                        </p>
+
+                        <a
+                            href="{{ url_for('transaction.add_transaction') }}"
+                            class="button button-primary"
+                        >
+                            Add Transaction
+                        </a>
+                    {% endif %}
                     </p>
 
                     <a
