@@ -302,7 +302,7 @@ def get_budget_progress_for_user(
            AND t.transaction_date >= %s
            AND t.transaction_date < %s
         WHERE b.user_id = %s
-          AND (%s IS NULL OR b.currency = %s)
+          AND (%s::text IS NULL OR b.currency = %s)
         GROUP BY
             b.id,
             b.user_id,
