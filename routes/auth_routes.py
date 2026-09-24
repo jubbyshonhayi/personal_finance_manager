@@ -486,7 +486,8 @@ def reset_password(token):
 
     flash(
         "Your password has been reset successfully. "
-        "You can now log in."
+        "You can now log in.",
+        "success"
     )
 
     return redirect(url_for("auth.login"))
