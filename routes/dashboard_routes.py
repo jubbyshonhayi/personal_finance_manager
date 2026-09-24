@@ -25,9 +25,6 @@ from services.transaction_service import (
 )
 
 from utils.auth import login_required
-from utils.enums import TransactionType
-
-
 dashboard = Blueprint("dashboard", __name__)
 
 
@@ -85,8 +82,7 @@ def dashboard_page():
                 net_amount=None,
                 category_breakdown=[],
                 budget_progress=[],
-                recent_transactions=recent_transactions,
-                TransactionType=TransactionType
+                recent_transactions=recent_transactions
             )
 
         requested_currency = request.args.get("currency")
@@ -129,6 +125,5 @@ def dashboard_page():
         net_amount=net_amount,
         category_breakdown=report.category_breakdowns,
         budget_progress=budget_progress,
-        recent_transactions=recent_transactions,
-        TransactionType=TransactionType
+        recent_transactions=recent_transactions
     )
