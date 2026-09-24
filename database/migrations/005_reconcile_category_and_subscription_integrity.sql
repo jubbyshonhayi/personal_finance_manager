@@ -94,7 +94,7 @@ $func$ LANGUAGE plpgsql;
 
 -- The trigger may already exist from migration 003. Create it only
 -- when it is missing so this corrective migration is safe to rerun.
-DO $
+DO $body$
 BEGIN
     IF NOT EXISTS (
         SELECT 1
@@ -109,7 +109,7 @@ BEGIN
         EXECUTE FUNCTION check_active_subscription_plan();
     END IF;
 END;
-$;
+$body$;
 
 
 -- Recreate the plan-deactivation guard function.
