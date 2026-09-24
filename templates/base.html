@@ -14,6 +14,13 @@
         </title>
 
         <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+            crossorigin="anonymous"
+        >
+
+        <link
             rel="stylesheet"
             href="{{ url_for('static', filename='css/base.css') }}"
         >
@@ -23,7 +30,7 @@
     </head>
 
     <body>
-        <nav class="navbar">
+        <nav class="navbar navbar-expand-md">
             <div class="navbar-container">
 
                 <a
@@ -33,82 +40,103 @@
                     Personal Finance Manager
                 </a>
 
-                <div class="navbar-links">
+                <button
+                    class="navbar-toggler"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#mainNavbar"
+                    aria-controls="mainNavbar"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation"
+                >
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div
+                    class="collapse navbar-collapse navbar-links"
+                    id="mainNavbar"
+                >
 
                     {% if session.get("user_id") %}
 
-                        <a
-                            href="{{ url_for('dashboard.dashboard_page') }}"
-                            {% if request.endpoint == "dashboard.dashboard_page" %}
-                                aria-current="page"
-                            {% endif %}
-                        >
-                            Dashboard
-                        </a>
+                        <div class="navbar-links-content">
 
-                        <a
-                            href="{{ url_for('transaction.transactions_page') }}"
-                            {% if request.endpoint == "transaction.transactions_page" %}
-                                aria-current="page"
-                            {% endif %}
-                        >
-                            Transactions
-                        </a>
-
-                        <a
-                            href="{{ url_for('transaction.add_transaction') }}"
-                            {% if request.endpoint == "transaction.add_transaction" %}
-                                aria-current="page"
-                            {% endif %}
-                        >
-                            Add Transaction
-                        </a>
-
-                        <a
-                            href="{{ url_for('budget.budgets_page') }}"
-                            {% if request.endpoint == "budget.budgets_page" %}
-                                aria-current="page"
-                            {% endif %}
-                        >
-                            Budgets
-                        </a>
-
-                        <form
-                            method="POST"
-                            action="{{ url_for('auth.logout') }}"
-                            class="logout-form"
-                        >
-                            <input
-                                type="hidden"
-                                name="csrf_token"
-                                value="{{ csrf_token() }}"
+                            <a
+                                href="{{ url_for('dashboard.dashboard_page') }}"
+                                {% if request.endpoint == "dashboard.dashboard_page" %}
+                                    aria-current="page"
+                                {% endif %}
                             >
+                                Dashboard
+                            </a>
 
-                            <button
-                                type="submit"
-                                class="logout-button"
+                            <a
+                                href="{{ url_for('transaction.transactions_page') }}"
+                                {% if request.endpoint == "transaction.transactions_page" %}
+                                    aria-current="page"
+                                {% endif %}
                             >
-                                Log out
-                            </button>
-                        </form>
+                                View Transactions
+                            </a>
+
+                            <a
+                                href="{{ url_for('transaction.add_transaction') }}"
+                                {% if request.endpoint == "transaction.add_transaction" %}
+                                    aria-current="page"
+                                {% endif %}
+                            >
+                                Add Transaction
+                            </a>
+
+                            <a
+                                href="{{ url_for('budget.budgets_page') }}"
+                                {% if request.endpoint == "budget.budgets_page" %}
+                                    aria-current="page"
+                                {% endif %}
+                            >
+                                Budgets
+                            </a>
+
+                            <form
+                                method="POST"
+                                action="{{ url_for('auth.logout') }}"
+                                class="logout-form"
+                            >
+                                <input
+                                    type="hidden"
+                                    name="csrf_token"
+                                    value="{{ csrf_token() }}"
+                                >
+
+                                <button
+                                    type="submit"
+                                    class="logout-button"
+                                >
+                                    Log out
+                                </button>
+                            </form>
+
+                        </div>
 
                     {% else %}
 
-                        <a href="{{ url_for('auth.login') }}">
-                            Log in
-                        </a>
+                        <div class="navbar-links-content">
 
-                        <a href="{{ url_for('auth.register') }}">
-                            Create Account
-                        </a>
+                            <a href="{{ url_for('auth.login') }}">
+                                Log in
+                            </a>
+
+                            <a href="{{ url_for('auth.register') }}">
+                                Create Account
+                            </a>
+
+                        </div>
 
                     {% endif %}
 
                 </div>
             </div>
         </nav>
-
-
         <main class="main-content">
 
             {% with messages = get_flashed_messages(with_categories=true) %}
@@ -157,6 +185,12 @@
             </div>
         </footer>
 
+
+        <script
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-FKyoEForCGlyvwxHj09JcYn3nv7wiPVlz7YYjWJrWVcXK/BmnVDxM+D2scQbITxI"
+            crossorigin="anonymous"
+        ></script>
 
         <script
             src="{{ url_for('static', filename='js/base.js') }}"
