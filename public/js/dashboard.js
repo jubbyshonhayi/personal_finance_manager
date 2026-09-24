@@ -1,11 +1,19 @@
 document.addEventListener("DOMContentLoaded", () => {
     const currencySelect = document.getElementById("currency");
+    const periodSelect = document.getElementById("period");
 
-    if (!currencySelect) {
+    if (!currencySelect && !periodSelect) {
         return;
     }
 
-    currencySelect.addEventListener("change", () => {
-        currencySelect.form.submit();
+    const filterSelects = [
+        currencySelect,
+        periodSelect
+    ].filter(Boolean);
+
+    filterSelects.forEach((select) => {
+        select.addEventListener("change", () => {
+            select.form.submit();
+        });
     });
 });
