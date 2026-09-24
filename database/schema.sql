@@ -371,7 +371,7 @@ WHERE status = 'active';
 
 
 CREATE OR REPLACE FUNCTION check_active_subscription_plan()
-RETURNS TRIGGER AS $
+RETURNS TRIGGER AS $func$
 DECLARE
     plan_active BOOLEAN;
 BEGIN
@@ -389,7 +389,7 @@ BEGIN
 
     RETURN NEW;
 END;
-$ LANGUAGE plpgsql;
+$func$ LANGUAGE plpgsql;
 
 
 CREATE TRIGGER user_subscription_active_plan_check
@@ -400,7 +400,7 @@ EXECUTE FUNCTION check_active_subscription_plan();
 
 
 CREATE OR REPLACE FUNCTION prevent_active_plan_deactivation()
-RETURNS TRIGGER AS $
+RETURNS TRIGGER AS $func$
 BEGIN
     IF OLD.is_active = TRUE
        AND NEW.is_active = FALSE
@@ -416,7 +416,7 @@ BEGIN
 
     RETURN NEW;
 END;
-$ LANGUAGE plpgsql;
+$func$ LANGUAGE plpgsql;
 
 
 CREATE TRIGGER subscription_plan_deactivation_check
