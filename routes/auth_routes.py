@@ -395,7 +395,10 @@ def forgot_password():
         if not ip_allowed or not email_allowed:
             rate_limited = True
         else:
-            user = get_user_by_email(email)
+            user = get_user_by_email(
+                connection=connection,
+                email=email
+            )
 
             if user is not None:
                 token = create_password_reset_token(
