@@ -427,23 +427,23 @@ def edit_transaction(transaction_id):
             url_for("dashboard.dashboard_page")
         )
 
-    with pool.connection() as connection:
-        existing_transaction = get_transaction_for_user(
-            connection=connection,
-            user_id=user_id,
-            transaction_id=transaction_id
-        )
-
-        if existing_transaction is None:
-            flash(
-                "Transaction not found.",
-                "danger"
-            )
-            return redirect(
-                url_for("dashboard.dashboard_page")
+    if request.method == "GET":
+        with pool.connection() as connection:
+            existing_transaction = get_transaction_for_user(
+                connection=connection,
+                user_id=user_id,
+                transaction_id=transaction_id
             )
 
-        if request.method == "GET":
+            if existing_transaction is None:
+                flash(
+                    "Transaction not found.",
+                    "danger"
+                )
+                return redirect(
+                    url_for("dashboard.dashboard_page")
+                )
+
             categories = get_categories_for_user(
                 connection,
                 user_id
@@ -610,17 +610,18 @@ def edit_transaction(transaction_id):
             )
 
         try:
-            updated_transaction = update_transaction(
-                connection=connection,
-                user_id=user_id,
-                transaction_id=transaction_id,
-                amount=amount,
-                currency=currency,
-                transaction_type=transaction_type,
-                category_id=category_id,
-                description=description,
-                transaction_date=transaction_date
-            )
+            with pool.connection() as connection:
+                updated_transaction = update_transaction(
+                    connection=connection,
+                    user_id=user_id,
+                    transaction_id=transaction_id,
+                    amount=amount,
+                    currency=currency,
+                    transaction_type=transaction_type,
+                    category_id=category_id,
+                    description=description,
+                    transaction_date=transaction_date
+                )
 
         except RaiseException as error:
             if (
