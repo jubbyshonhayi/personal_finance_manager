@@ -363,6 +363,35 @@
 
         </section>
 
+    {% elif selected_currency %}
+
+        <section class="budget-progress-section">
+
+            <div class="dashboard-card budget-empty-state">
+
+                <div class="section-heading">
+                    <div>
+                        <h2>Set a Monthly Budget</h2>
+
+                        <p>
+                            You haven't set a budget for
+                            <strong>{{ selected_currency }}</strong>
+                            yet.
+                        </p>
+                    </div>
+                </div>
+
+                <a
+                    class="button button-primary"
+                    href="{{ url_for('budget.add_budget') }}"
+                >
+                    Add a Budget
+                </a>
+
+            </div>
+
+        </section>
+
     {% endif %}
 
 
