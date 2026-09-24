@@ -55,6 +55,33 @@ from utils.rate_limit import (
 
 auth = Blueprint("auth", __name__)
 
+MAX_EMAIL_LENGTH = 254
+MAX_PASSWORD_LENGTH = 128
+PASSWORD_RESET_TOKEN_LENGTH = 43
+
+
+def _is_valid_email(email: str) -> bool:
+    """
+    Validates the application's accepted email format.
+    """
+    return (
+        len(email) <= MAX_EMAIL_LENGTH
+        and re.fullmatch(
+            r"^[^@\s]+@[^@\s]+\.[^@\s]+$",
+            email
+        ) is not None
+    )
+
+
+def _is_valid_reset_token(token: str) -> bool:
+    """
+    Validates the expected format of generated reset tokens.
+    """
+    return (
+        len(token) == PASSWORD_RESET_TOKEN_LENGTH
+        and re.fullmatch(r"[A-Za-z0-9_-]+", token) is not None
+    )
+
 
 @auth.route("/register", methods=["GET", "POST"])
 def register():
@@ -104,17 +131,14 @@ def register():
             )
             return redirect(url_for("auth.register"))
 
-        if len(email) > 254:
+        if len(email) > MAX_EMAIL_LENGTH:
             flash(
                 "Email address is too long.",
                 "danger"
             )
             return redirect(url_for("auth.register"))
 
-        if not re.fullmatch(
-            r"^[^@\s]+@[^@\s]+\.[^@\s]+$",
-            email
-        ):
+        if not _is_valid_email(email):
             flash(
                 "Please enter a valid email address.",
                 "danger"
@@ -128,7 +152,7 @@ def register():
             )
             return redirect(url_for("auth.register"))
 
-        if len(password) > 128:
+        if len(password) > MAX_PASSWORD_LENGTH:
             flash(
                 "Password must not exceed 128 characters.",
                 "danger"
@@ -204,6 +228,20 @@ def login():
         if not identifier:
             flash(
                 "Username/email and password are required.",
+                "danger"
+            )
+            return redirect(url_for("auth.login"))
+
+        if len(identifier) > MAX_EMAIL_LENGTH:
+            flash(
+                "Username/email is too long.",
+                "danger"
+            )
+            return redirect(url_for("auth.login"))
+
+        if len(password) > MAX_PASSWORD_LENGTH:
+            flash(
+                "Password must not exceed 128 characters.",
                 "danger"
             )
             return redirect(url_for("auth.login"))
@@ -319,6 +357,20 @@ def forgot_password():
         )
         return render_template("auth/forgot_password.html")
 
+    if len(email) > MAX_EMAIL_LENGTH:
+        flash(
+            "Email address is too long.",
+            "danger"
+        )
+        return render_template("auth/forgot_password.html")
+
+    if not _is_valid_email(email):
+        flash(
+            "Please enter a valid email address.",
+            "danger"
+        )
+        return render_template("auth/forgot_password.html")
+
     client_ip = get_client_ip(request)
 
     token = None
@@ -406,6 +458,13 @@ def reset_password(token):
     Allows a user to set a new password using a valid
     password-reset token.
     """
+    if not _is_valid_reset_token(token):
+        flash(
+            "This password-reset link is invalid or has expired.",
+            "danger"
+        )
+        return redirect(url_for("auth.login"))
+
     with pool.connection() as connection:
         user = get_user_for_reset_token(
             connection=connection,
@@ -438,7 +497,7 @@ def reset_password(token):
                 token=token
             )
 
-        if len(password) > 128:
+        if len(password) > MAX_PASSWORD_LENGTH:
             flash(
                 "Password must not exceed 128 characters.",
                 "danger"
