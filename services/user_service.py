@@ -69,25 +69,27 @@ def get_user_by_username(username: str) -> User | None:
     )
 
 
-def get_user_by_email(email: str) -> User | None:
+def get_user_by_email(
+    connection,
+    email: str
+) -> User | None:
     """
-    Retrieves a user by email address.
+    Retrieves a user by email using the provided database connection.
     Returns None if the user does not exist.
     """
-    with pool.connection() as connection:
-        row = connection.execute(
-            """
-            SELECT
-                id,
-                username,
-                email,
-                password_hash,
-                date_joined
-            FROM users
-            WHERE LOWER(email) = LOWER(%s);
-            """,
-            (email,)
-        ).fetchone()
+    row = connection.execute(
+        """
+        SELECT
+            id,
+            username,
+            email,
+            password_hash,
+            date_joined
+        FROM users
+        WHERE LOWER(email) = LOWER(%s);
+        """,
+        (email,)
+    ).fetchone()
 
     if row is None:
         return None
