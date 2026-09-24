@@ -448,3 +448,10 @@ CREATE TABLE auth_rate_limit_buckets (
 
 CREATE INDEX auth_rate_limit_buckets_window_idx
 ON auth_rate_limit_buckets (window_started_at);
+
+-- Tracks database schema versions applied to the database.
+-- Version 0 represents the initial production schema baseline.
+CREATE TABLE schema_migrations (
+    version INTEGER PRIMARY KEY,
+    applied_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
