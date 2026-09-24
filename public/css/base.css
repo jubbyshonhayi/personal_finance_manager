@@ -70,7 +70,8 @@ textarea {
     font-weight: 500;
 }
 
-.navbar-links a:hover {
+.navbar-links a:hover,
+.navbar-links a[aria-current="page"] {
     color: #0d6efd;
 }
 
