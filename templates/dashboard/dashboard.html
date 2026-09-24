@@ -257,6 +257,115 @@
     {% endif %}
 
 
+    {% if budget_progress %}
+
+        <section class="budget-progress-section">
+
+            <div class="dashboard-card">
+
+                <div class="section-heading budget-progress-heading">
+                    <div>
+                        <h2>Budget Progress</h2>
+
+                        <p>
+                            Current-month spending against your monthly limits.
+                        </p>
+                    </div>
+
+                    <a
+                        class="view-all"
+                        href="{{ url_for('budget.budgets_page') }}"
+                    >
+                        Manage Budgets
+                    </a>
+                </div>
+
+
+                <div class="budget-progress-list">
+
+                    {% for budget in budget_progress %}
+
+                        <article
+                            class="
+                                budget-progress-item
+                                {% if budget.is_over_budget %}
+                                    budget-over
+                                {% endif %}
+                            "
+                        >
+
+                            <div class="budget-progress-header">
+
+                                <div>
+                                    <div class="budget-progress-name">
+                                        {{ budget.category_name }}
+                                    </div>
+
+                                    <div class="budget-progress-meta">
+                                        {{ budget.currency }}
+                                        ·
+                                        {{ budget.month_start.strftime("%B %Y") }}
+                                    </div>
+                                </div>
+
+                                <div class="budget-progress-status">
+                                    {% if budget.is_over_budget %}
+                                        Over budget by
+                                        {{ (-budget.remaining_amount) }}
+                                        {{ budget.currency }}
+                                    {% else %}
+                                        {{ budget.remaining_amount }}
+                                        {{ budget.currency }}
+                                        remaining
+                                    {% endif %}
+                                </div>
+
+                            </div>
+
+
+                            <div class="budget-progress-track">
+
+                                <div
+                                    class="budget-progress-bar"
+                                    style="width: {{ [budget.progress_percentage, 100] | min }}%;"
+                                ></div>
+
+                            </div>
+
+
+                            <div class="budget-progress-footer">
+
+                                <span>
+                                    {{ budget.spent_amount }}
+                                    {{ budget.currency }}
+                                    spent
+                                </span>
+
+                                <span>
+                                    {{ budget.monthly_limit }}
+                                    {{ budget.currency }}
+                                    limit
+                                </span>
+
+                                <strong>
+                                    {{ budget.progress_percentage | round(1) }}%
+                                </strong>
+
+                            </div>
+
+                        </article>
+
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+        </section>
+
+    {% endif %}
+
+
     <section class="transactions-card">
 
         <div class="transactions-header">
