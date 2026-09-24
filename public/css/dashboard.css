@@ -292,6 +292,17 @@
     color: #495057;
 }
 
+.budget-empty-state {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+}
+
+.budget-empty-state .section-heading {
+    flex: 1;
+}
+
 
 /* Recent transactions */
 
@@ -439,11 +450,17 @@
 }
 
 @media (max-width: 600px) {
-    .budget-progress-header {
+    .budget-progress-header,
+    .budget-empty-state {
         flex-direction: column;
+        align-items: stretch;
     }
 
     .budget-progress-status {
         text-align: left;
+    }
+
+    .budget-empty-state .button {
+        align-self: flex-start;
     }
 }
