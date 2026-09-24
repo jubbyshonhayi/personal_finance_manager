@@ -32,6 +32,9 @@ textarea {
 /* Navigation */
 
 .navbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
     background-color: #ffffff;
     border-bottom: 1px solid #dee2e6;
 }
@@ -67,6 +70,25 @@ textarea {
     color: #0d6efd;
 }
 
+.logout-form {
+    margin: 0;
+}
+
+.logout-button {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #495057;
+    font: inherit;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.logout-button:hover {
+    color: #0d6efd;
+}
+
 
 /* Keyboard focus */
 
@@ -85,6 +107,7 @@ textarea:focus-visible {
 .main-content {
     width: 100%;
     max-width: 1200px;
+    flex: 1;
     margin: 0 auto;
     padding: 1.25rem 1rem 2rem;
 }
@@ -176,4 +199,26 @@ textarea:focus-visible {
     .main-content {
         padding: 2rem 1.5rem 3rem;
     }
+
+    .site-footer-container {
+        padding: 1rem 1.5rem;
+    }
+}
+
+/* Footer */
+
+.site-footer {
+    margin-top: auto;
+    border-top: 1px solid #dee2e6;
+    background-color: #ffffff;
+    color: #6c757d;
+}
+
+.site-footer-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem;
+    font-size: 0.85rem;
+    text-align: center;
 }
