@@ -54,6 +54,17 @@ def _validate_budget_values(
     if monthly_limit <= 0:
         raise ValueError("Monthly budget limit must be greater than zero.")
 
+    if not isinstance(monthly_limit, Decimal):
+        raise ValueError("Monthly budget limit must be a Decimal.")
+
+    if not monthly_limit.is_finite():
+        raise ValueError("Monthly budget limit must be finite.")
+
+    if monthly_limit.as_tuple().exponent < -4:
+        raise ValueError(
+            "Monthly budget limit cannot have more than 4 decimal places."
+        )
+
 
 def _row_to_budget(row) -> Budget:
     """
