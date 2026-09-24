@@ -16,26 +16,6 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
-.page-header {
-    margin-bottom: 1.75rem;
-}
-
-.page-header h1 {
-    margin: 0 0 0.5rem;
-    font-size: 1.875rem;
-    font-weight: 650;
-    line-height: 1.2;
-}
-
-.page-header p {
-    margin: 0;
-    color: #6b7280;
-    font-size: 0.95rem;
-}
-
-
-/* Form fields */
-
 .form-group {
     margin-bottom: 1.25rem;
 }
@@ -139,21 +119,6 @@
     outline-offset: 2px;
 }
 
-.back-link {
-    display: block;
-    margin-top: 1.25rem;
-    color: #6b7280;
-    font-size: 0.875rem;
-    text-align: center;
-    text-decoration: none;
-}
-
-.back-link:hover {
-    color: #374151;
-    text-decoration: underline;
-}
-
-
 /* Smaller screens */
 
 @media (max-width: 600px) {
@@ -180,10 +145,7 @@
 }
 
 .transactions-page-header {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
+    align-items: flex-end;
 }
 
 
@@ -286,19 +248,6 @@
 
 
 /* Secondary button */
-
-.button-secondary {
-    width: auto;
-    color: #212529;
-    background-color: #ffffff;
-    border: 1px solid #ced4da;
-    text-decoration: none;
-}
-
-.button-secondary:hover {
-    color: #212529;
-    background-color: #f8f9fa;
-}
 
 
 /* Transaction results */
@@ -501,9 +450,6 @@
         grid-column: 1 / -1;
     }
 
-    .button {
-        width: auto;
-    }
 }
 
 

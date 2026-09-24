@@ -2,18 +2,27 @@ document.addEventListener("DOMContentLoaded", () => {
     const currencySelect = document.getElementById("currency");
     const periodSelect = document.getElementById("period");
 
-    if (!currencySelect && !periodSelect) {
-        return;
+    if (currencySelect || periodSelect) {
+        const filterSelects = [
+            currencySelect,
+            periodSelect
+        ].filter(Boolean);
+
+        filterSelects.forEach((select) => {
+            select.addEventListener("change", () => {
+                select.form.submit();
+            });
+        });
     }
 
-    const filterSelects = [
-        currencySelect,
-        periodSelect
-    ].filter(Boolean);
+    const progressBars =
+        document.querySelectorAll(".budget-progress-bar");
 
-    filterSelects.forEach((select) => {
-        select.addEventListener("change", () => {
-            select.form.submit();
-        });
-    });
+    for (const progressBar of progressBars) {
+        const progress = Number(progressBar.dataset.progress);
+
+        if (Number.isFinite(progress)) {
+            progressBar.style.width = `${Math.min(progress, 100)}%`;
+        }
+    }
 });

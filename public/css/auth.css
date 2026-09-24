@@ -116,27 +116,6 @@
 
 /* Form button */
 
-.auth-card .button {
-    width: 100%;
-    padding: 0.7rem 1rem;
-    border: 0;
-    border-radius: 6px;
-    font: inherit;
-    font-size: 0.875rem;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-.auth-card .button-primary {
-    color: #ffffff;
-    background: #4f46e5;
-}
-
-.auth-card .button-primary:hover {
-    background: #4338ca;
-}
-
-
 /* Authentication links */
 
 .auth-links {
@@ -172,6 +151,10 @@
 
     .auth-card {
         padding: 1.5rem 1.25rem;
+    }
+
+    .auth-card .button {
+        width: 100%;
     }
 
     .auth-card .page-header h1 {
