@@ -146,30 +146,35 @@
 
 
                 <div class="filter-group">
-                    <label for="start_date">
-                        From
+                    <label>
+                        Date range
                     </label>
 
-                    <input
-                        type="date"
-                        id="start_date"
-                        name="start_date"
-                        value="{{ filters.start_date }}"
-                    >
-                </div>
+                    <div class="filter-group">
+                        <label for="start_date">
+                            From
+                        </label>
 
+                        <input
+                            type="date"
+                            id="start_date"
+                            name="start_date"
+                            value="{{ filters.start_date }}"
+                        >
+                    </div>
 
-                <div class="filter-group">
-                    <label for="end_date">
-                        To
-                    </label>
+                    <div class="filter-group">
+                        <label for="end_date">
+                            To
+                        </label>
 
-                    <input
-                        type="date"
-                        id="end_date"
-                        name="end_date"
-                        value="{{ filters.end_date }}"
-                    >
+                        <input
+                            type="date"
+                            id="end_date"
+                            name="end_date"
+                            value="{{ filters.end_date }}"
+                        >
+                    </div>
                 </div>
 
 
