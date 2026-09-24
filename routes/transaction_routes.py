@@ -240,7 +240,9 @@ def export_transactions():
         output.getvalue(),
         mimetype="text/csv",
         headers={
-            "Content-Disposition": "attachment; filename=transactions.csv"
+            "Content-Disposition": (
+                f"attachment; filename=transactions_{date.today().isoformat()}.csv"
+            )
         }
     )
 
