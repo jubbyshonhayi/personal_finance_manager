@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Delete Budget | Personal Finance Manager
+{% endblock %}
+
+{% block head %}
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/budgets.css') }}"
+    >
+{% endblock %}
+
+{% block content %}
+    <div class="budget-form-page">
+        <section class="budget-form-card budget-danger-card">
+            <header class="budget-form-header">
+                <h1>Delete Budget</h1>
+                <p>
+                    This will permanently remove the monthly budget.
+                    Your transactions will not be deleted.
+                </p>
+            </header>
+
+            <div class="budget-delete-summary">
+                <div>
+                    <span>Category</span>
+                    <strong>{{ budget.category_name }}</strong>
+                </div>
+
+                <div>
+                    <span>Monthly Limit</span>
+                    <strong>
+                        {{ budget.monthly_limit }}
+                        {{ budget.currency }}
+                    </strong>
+                </div>
+            </div>
+
+            <form method="POST">
+                <input
+                    type="hidden"
+                    name="csrf_token"
+                    value="{{ csrf_token() }}"
+                >
+
+                <button
+                    type="submit"
+                    class="button button-danger"
+                >
+                    Yes, Delete Budget
+                </button>
+            </form>
+
+            <a
+                class="back-link"
+                href="{{ url_for('budget.budgets_page') }}"
+            >
+                Cancel
+            </a>
+        </section>
+    </div>
+{% endblock %}
