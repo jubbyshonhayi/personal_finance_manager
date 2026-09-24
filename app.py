@@ -94,14 +94,6 @@ def page_not_found(error):
     return render_template("errors/404.html"), 404
 
 
-@app.errorhandler(413)
-def request_too_large(error):
-    """
-    Handles requests that exceed the configured request size limit.
-    """
-    return render_template("errors/413.html"), 413
-
-
 @app.errorhandler(500)
 def internal_server_error(error):
     """
