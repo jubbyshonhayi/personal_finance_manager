@@ -38,8 +38,12 @@ def dashboard_page():
     Displays the user's financial dashboard.
 
     Financial calculations are performed for the selected
-    currency and reporting period, while budget progress
-    always reflects the current month.
+    currency and reporting period. The selected currency is
+    persisted in the session so navigation between pages does
+    not reset the user's dashboard context.
+
+    Budget progress always reflects the current month and the
+    selected dashboard currency.
     """
     user_id = UUID(session["user_id"])
 
@@ -58,11 +62,6 @@ def dashboard_page():
     )
 
     with pool.connection() as connection:
-        budget_progress = get_budget_progress_for_user(
-            connection=connection,
-            user_id=user_id
-        )
-
         currencies = get_available_currencies(
             connection=connection,
             user_id=user_id
@@ -74,6 +73,8 @@ def dashboard_page():
         )
 
         if not currencies:
+            session.pop("dashboard_currency", None)
+
             return render_template(
                 "dashboard/dashboard.html",
                 currencies=[],
@@ -83,17 +84,22 @@ def dashboard_page():
                 summary=None,
                 net_amount=None,
                 category_breakdown=[],
-                budget_progress=budget_progress,
+                budget_progress=[],
                 recent_transactions=recent_transactions,
                 TransactionType=TransactionType
             )
 
         requested_currency = request.args.get("currency")
+        session_currency = session.get("dashboard_currency")
 
         if requested_currency in currencies:
             selected_currency = requested_currency
+        elif session_currency in currencies:
+            selected_currency = session_currency
         else:
             selected_currency = currencies[0]
+
+        session["dashboard_currency"] = selected_currency
 
         report = get_financial_report(
             connection=connection,
@@ -101,6 +107,12 @@ def dashboard_page():
             currency=selected_currency,
             start_date=start_date,
             end_date=end_date
+        )
+
+        budget_progress = get_budget_progress_for_user(
+            connection=connection,
+            user_id=user_id,
+            currency=selected_currency
         )
 
     net_amount = (
