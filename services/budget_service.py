@@ -1,4 +1,3 @@
-from calendar import monthrange
 from datetime import date
 from decimal import Decimal
 from uuid import UUID
@@ -120,7 +119,7 @@ def _row_to_budget_progress(
         budget_id=row[0],
         category_id=row[2],
         category_name=row[3],
-        currency=row[4],
+        currency=row[6],
         monthly_limit=monthly_limit,
         spent_amount=spent_amount,
         remaining_amount=remaining_amount,
