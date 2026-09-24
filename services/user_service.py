@@ -101,29 +101,33 @@ def get_user_by_email(email: str) -> User | None:
     )
 
 
-def get_user_by_login_identifier(identifier: str) -> User | None:
+def get_user_by_login_identifier(
+    connection,
+    identifier: str
+) -> User | None:
     """
-    Retrieves a user by username or email.
+    Retrieves a user by username or email using the provided
+    database connection.
+
     Returns None if the user does not exist.
     """
-    with pool.connection() as connection:
-        row = connection.execute(
-            """
-            SELECT
-                id,
-                username,
-                email,
-                password_hash,
-                date_joined
-            FROM users
-            WHERE LOWER(username) = LOWER(%s)
-               OR LOWER(email) = LOWER(%s);
-            """,
-            (
-                identifier,
-                identifier
-            )
-        ).fetchone()
+    row = connection.execute(
+        """
+        SELECT
+            id,
+            username,
+            email,
+            password_hash,
+            date_joined
+        FROM users
+        WHERE LOWER(username) = LOWER(%s)
+           OR LOWER(email) = LOWER(%s);
+        """,
+        (
+            identifier,
+            identifier
+        )
+    ).fetchone()
 
     if row is None:
         return None
