@@ -1,4 +1,22 @@
 document.addEventListener("DOMContentLoaded", () => {
+    const navbarToggler =
+        document.querySelector("#navbarToggler");
+    const navbar =
+        document.querySelector("#mainNavbar");
+
+    if (navbarToggler && navbar) {
+        navbarToggler.addEventListener("click", () => {
+            const isExpanded =
+                navbarToggler.getAttribute("aria-expanded") === "true";
+
+            navbarToggler.setAttribute(
+                "aria-expanded",
+                String(!isExpanded)
+            );
+            navbar.classList.toggle("show", !isExpanded);
+        });
+    }
+
     const flashMessages =
         document.querySelectorAll(".flash-message");
 
