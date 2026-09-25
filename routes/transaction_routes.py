@@ -2,7 +2,7 @@ import csv
 from datetime import date
 from decimal import Decimal, DecimalException
 from io import StringIO
-from uuid import UUID
+from uuid import UUID, uuid4
 
 from utils.auth import login_required
 from utils.currencies import SUPPORTED_CURRENCIES
@@ -265,6 +265,18 @@ def add_transaction():
         category_id = request.form.get("category_id")
         description = request.form.get("description")
         transaction_date = request.form.get("transaction_date")
+        request_id = request.form.get("request_id")
+
+        try:
+            request_id = UUID(request_id)
+        except (ValueError, TypeError):
+            flash(
+                "Invalid transaction submission. Please try again.",
+                "danger"
+            )
+            return redirect(
+                url_for("transaction.add_transaction")
+            )
 
         if (
             not amount
@@ -375,7 +387,8 @@ def add_transaction():
                     transaction_type=transaction_type,
                     category_id=category_id,
                     description=description,
-                    transaction_date=transaction_date
+                    transaction_date=transaction_date,
+                    request_id=request_id
                 )
 
         except RaiseException as error:
@@ -433,7 +446,8 @@ def add_transaction():
     return render_template(
         "transactions/add_transaction.html",
         categories=categories,
-        currencies=SUPPORTED_CURRENCIES
+        currencies=SUPPORTED_CURRENCIES,
+        request_id=uuid4()
     )
 
 
