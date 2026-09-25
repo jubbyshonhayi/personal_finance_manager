@@ -9,7 +9,7 @@
 .currency-selector label {
     font-size: 0.85rem;
     font-weight: 600;
-    color: #495057;
+    color: #667085;
 }
 
 .currency-selector select {
@@ -17,8 +17,8 @@
     padding: 0.6rem 0.75rem;
     border: 1px solid #ced4da;
     border-radius: 0.45rem;
-    background-color: #ffffff;
-    color: #212529;
+    background-color: #FFFFFF;
+    color: #172B4D;
 }
 
 
@@ -33,14 +33,14 @@
 
 .summary-card {
     padding: 1.25rem;
-    background-color: #ffffff;
-    border: 1px solid #e1e5e9;
+    background-color: #FFFFFF;
+    border: 1px solid #E4E7EC;
     border-radius: 0.65rem;
 }
 
 .card-label {
     margin-bottom: 0.5rem;
-    color: #6c757d;
+    color: #667085;
     font-size: 0.85rem;
     font-weight: 600;
 }
@@ -52,20 +52,20 @@
 
 .card-value.income,
 .transaction-amount.income {
-    color: #198754;
+    color: #155EEF;
 }
 
 .card-value.expense,
 .transaction-amount.expense {
-    color: #dc3545;
+    color: #D92D20;
 }
 
 .card-value.positive {
-    color: #198754;
+    color: #155EEF;
 }
 
 .card-value.negative {
-    color: #dc3545;
+    color: #D92D20;
 }
 
 
@@ -81,8 +81,8 @@
 .dashboard-card,
 .transactions-card {
     padding: 1.25rem;
-    background-color: #ffffff;
-    border: 1px solid #e1e5e9;
+    background-color: #FFFFFF;
+    border: 1px solid #E4E7EC;
     border-radius: 0.65rem;
 }
 
@@ -95,7 +95,7 @@
 .section-heading p,
 .transactions-header p {
     margin: 0.35rem 0 0;
-    color: #6c757d;
+    color: #667085;
     font-size: 0.9rem;
 }
 
@@ -127,7 +127,7 @@
 }
 
 .category-amount {
-    color: #495057;
+    color: #667085;
     font-size: 0.9rem;
 }
 
@@ -137,21 +137,21 @@
     appearance: none;
     border: 0;
     border-radius: 999px;
-    background-color: #e9ecef;
+    background-color: #EAECF0;
 }
 
 .category-progress::-webkit-progress-bar {
-    background-color: #e9ecef;
+    background-color: #EAECF0;
     border-radius: 999px;
 }
 
 .category-progress::-webkit-progress-value {
-    background-color: #0d6efd;
+    background-color: #155EEF;
     border-radius: 999px;
 }
 
 .category-progress::-moz-progress-bar {
-    background-color: #0d6efd;
+    background-color: #155EEF;
     border-radius: 999px;
 }
 
@@ -163,7 +163,7 @@
 }
 
 .insight-label {
-    color: #6c757d;
+    color: #667085;
     font-size: 0.85rem;
     font-weight: 600;
 }
@@ -176,7 +176,7 @@
 
 .insight p {
     margin: 0.75rem 0 0;
-    color: #495057;
+    color: #667085;
 }
 
 
@@ -201,7 +201,7 @@
 
 .budget-progress-item {
     padding-top: 1rem;
-    border-top: 1px solid #e9ecef;
+    border-top: 1px solid #EAECF0;
 }
 
 .budget-progress-item:first-child {
@@ -222,20 +222,20 @@
 
 .budget-progress-meta {
     margin-top: 0.2rem;
-    color: #6c757d;
+    color: #667085;
     font-size: 0.8rem;
 }
 
 .budget-progress-status {
     flex-shrink: 0;
-    color: #495057;
+    color: #667085;
     font-size: 0.85rem;
     font-weight: 600;
     text-align: right;
 }
 
 .budget-progress-item.budget-over .budget-progress-status {
-    color: #dc3545;
+    color: #D92D20;
 }
 
 .budget-progress-track {
@@ -243,19 +243,19 @@
     height: 0.65rem;
     margin-top: 0.75rem;
     overflow: hidden;
-    background-color: #e9ecef;
+    background-color: #EAECF0;
     border-radius: 999px;
 }
 
 .budget-progress-bar {
     height: 100%;
     min-width: 0;
-    background-color: #0d6efd;
+    background-color: #155EEF;
     border-radius: inherit;
 }
 
 .budget-progress-item.budget-over .budget-progress-bar {
-    background-color: #dc3545;
+    background-color: #D92D20;
 }
 
 .budget-progress-footer {
@@ -263,13 +263,13 @@
     grid-template-columns: 1fr auto;
     gap: 0.25rem 1rem;
     margin-top: 0.5rem;
-    color: #6c757d;
+    color: #667085;
     font-size: 0.8rem;
 }
 
 .budget-progress-footer strong {
     grid-column: 1 / -1;
-    color: #495057;
+    color: #667085;
 }
 
 .budget-empty-state {
@@ -294,7 +294,7 @@
 }
 
 .view-all {
-    color: #0d6efd;
+    color: #155EEF;
     font-size: 0.9rem;
     font-weight: 600;
 }
@@ -313,7 +313,7 @@
     grid-template-columns: 1fr;
     gap: 0.5rem;
     padding: 1rem 0;
-    border-top: 1px solid #e9ecef;
+    border-top: 1px solid #EAECF0;
 }
 
 .transaction:first-child {
@@ -331,12 +331,12 @@
 
 .transaction-category {
     margin-top: 0.25rem;
-    color: #6c757d;
+    color: #667085;
     font-size: 0.85rem;
 }
 
 .transaction-date {
-    color: #6c757d;
+    color: #667085;
     font-size: 0.85rem;
 }
 
@@ -349,7 +349,7 @@
 
 .empty-state {
     padding: 1.5rem 0;
-    color: #6c757d;
+    color: #667085;
     text-align: center;
 }
 
