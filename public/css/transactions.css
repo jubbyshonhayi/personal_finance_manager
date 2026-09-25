@@ -10,8 +10,8 @@
     max-width: 620px;
     margin: 0 auto;
     padding: 2rem;
-    background: #ffffff;
-    border: 1px solid #e1e4e8;
+    background: #FFFFFF;
+    border: 1px solid #E4E7EC;
     border-radius: 10px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
@@ -23,7 +23,7 @@
 .form-group label {
     display: block;
     margin-bottom: 0.45rem;
-    color: #374151;
+    color: #344054;
     font-size: 0.875rem;
     font-weight: 600;
 }
@@ -33,10 +33,10 @@
 .form-group textarea {
     width: 100%;
     padding: 0.625rem 0.7rem;
-    border: 1px solid #d1d5db;
+    border: 1px solid #D0D5DD;
     border-radius: 6px;
-    background: #ffffff;
-    color: #1f2937;
+    background: #FFFFFF;
+    color: #172B4D;
     font: inherit;
     font-size: 0.875rem;
     box-sizing: border-box;
@@ -45,20 +45,20 @@
 .form-group input:hover,
 .form-group select:hover,
 .form-group textarea:hover {
-    border-color: #9ca3af;
+    border-color: #98A2B3;
 }
 
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
     outline: none;
-    border-color: #4f46e5;
+    border-color: #155EEF;
 }
 
 .form-group input:focus-visible,
 .form-group select:focus-visible,
 .form-group textarea:focus-visible {
-    outline: 3px solid #80bdff;
+    outline: 3px solid #84CAFF;
     outline-offset: 2px;
 }
 
@@ -73,7 +73,7 @@
 .secondary-link {
     display: inline-block;
     margin-top: 0.5rem;
-    color: #4f46e5;
+    color: #155EEF;
     font-size: 0.8125rem;
     text-decoration: none;
 }
@@ -97,21 +97,21 @@
 }
 
 .button-primary {
-    background: #4f46e5;
-    color: #ffffff;
+    background: #155EEF;
+    color: #FFFFFF;
 }
 
 .button-primary:hover {
-    background: #4338ca;
+    background: #004EEB;
 }
 
 .button-danger {
-    background: #dc3545;
-    color: #ffffff;
+    background: #D92D20;
+    color: #FFFFFF;
 }
 
 .button-danger:hover {
-    background: #bb2d3b;
+    background: #B42318;
 }
 
 .button-danger:focus-visible {
@@ -154,8 +154,8 @@
 .transactions-filters,
 .transactions-card {
     padding: 1.25rem;
-    background-color: #ffffff;
-    border: 1px solid #e1e5e9;
+    background-color: #FFFFFF;
+    border: 1px solid #E4E7EC;
     border-radius: 0.65rem;
 }
 
@@ -179,7 +179,7 @@
 .section-heading p,
 .transactions-header p {
     margin: 0.35rem 0 0;
-    color: #6c757d;
+    color: #667085;
     font-size: 0.9rem;
 }
 
@@ -208,7 +208,7 @@
 }
 
 .filter-group label {
-    color: #495057;
+    color: #667085;
     font-size: 0.85rem;
     font-weight: 600;
 }
@@ -219,10 +219,10 @@
     min-width: 0;
     min-height: 2.7rem;
     padding: 0.6rem 0.75rem;
-    border: 1px solid #ced4da;
+    border: 1px solid #D0D5DD;
     border-radius: 0.45rem;
-    background-color: #ffffff;
-    color: #212529;
+    background-color: #FFFFFF;
+    color: #172B4D;
     font: inherit;
     box-sizing: border-box;
 }
@@ -230,7 +230,7 @@
 .filter-group input:focus,
 .filter-group select:focus {
     outline: none;
-    border-color: #86b7fe;
+    border-color: #84CAFF;
     box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
 }
 
@@ -267,14 +267,14 @@
 .transactions-table th,
 .transactions-table td {
     padding: 0.9rem 0.75rem;
-    border-top: 1px solid #e9ecef;
+    border-top: 1px solid #EAECF0;
     vertical-align: middle;
     text-align: left;
 }
 
 .transactions-table th {
-    background-color: #f8f9fa;
-    color: #495057;
+    background-color: #F2F4F7;
+    color: #667085;
     font-size: 0.8rem;
     font-weight: 700;
     letter-spacing: 0.02em;
@@ -282,11 +282,11 @@
 }
 
 .transactions-table tbody tr:hover {
-    background-color: #f8f9fa;
+    background-color: #F2F4F7;
 }
 
 .transactions-table tbody tr:first-child td {
-    border-top: 1px solid #e9ecef;
+    border-top: 1px solid #EAECF0;
 }
 
 
@@ -306,7 +306,7 @@
 }
 
 .transaction-amount.expense {
-    color: #dc3545;
+    color: #D92D20;
 }
 
 .transaction-description {
@@ -315,7 +315,7 @@
 }
 
 .text-muted {
-    color: #6c757d;
+    color: #667085;
 }
 
 .transaction-date,
@@ -336,13 +336,13 @@
 }
 
 .transaction-type-income {
-    color: #146c43;
-    background-color: #d1e7dd;
+    color: #155EEF;
+    background-color: #E0F2FE;
 }
 
 .transaction-type-expense {
-    color: #b02a37;
-    background-color: #f8d7da;
+    color: #B42318;
+    background-color: #FEE4E2;
 }
 
 
@@ -364,7 +364,7 @@
 }
 
 .transaction-action-link {
-    color: #0d6efd;
+    color: #155EEF;
     font-size: 0.85rem;
     font-weight: 600;
     text-decoration: none;
@@ -375,7 +375,7 @@
 }
 
 .transaction-action-delete {
-    color: #dc3545;
+    color: #D92D20;
 }
 
 
@@ -389,7 +389,7 @@
     gap: 1rem;
     margin-top: 1.5rem;
     padding-top: 1rem;
-    border-top: 1px solid #e9ecef;
+    border-top: 1px solid #EAECF0;
 }
 
 .pagination-link {
@@ -398,9 +398,9 @@
     justify-content: center;
     min-height: 2.4rem;
     padding: 0.5rem 0.8rem;
-    color: #0d6efd;
-    background-color: #ffffff;
-    border: 1px solid #ced4da;
+    color: #155EEF;
+    background-color: #FFFFFF;
+    border: 1px solid #D0D5DD;
     border-radius: 0.45rem;
     font-size: 0.85rem;
     font-weight: 600;
@@ -408,12 +408,12 @@
 }
 
 .pagination-link:hover {
-    background-color: #f8f9fa;
-    border-color: #adb5bd;
+    background-color: #F2F4F7;
+    border-color: #98A2B3;
 }
 
 .pagination-current {
-    color: #495057;
+    color: #667085;
     font-size: 0.9rem;
     font-weight: 600;
 }
@@ -422,7 +422,7 @@
 /* View-all link */
 
 .view-all {
-    color: #0d6efd;
+    color: #155EEF;
     font-size: 0.9rem;
     font-weight: 600;
     text-decoration: none;
@@ -501,8 +501,8 @@
 
     .transactions-table tr {
         padding: 1rem;
-        background-color: #ffffff;
-        border: 1px solid #e1e5e9;
+        background-color: #FFFFFF;
+        border: 1px solid #E4E7EC;
         border-radius: 0.65rem;
     }
 
@@ -518,7 +518,7 @@
 
     .transactions-table td::before {
         content: attr(data-label);
-        color: #6c757d;
+        color: #667085;
         font-size: 0.8rem;
         font-weight: 600;
     }
@@ -530,7 +530,7 @@
     .transaction-actions {
         padding-top: 0.75rem !important;
         margin-top: 0.5rem;
-        border-top: 1px solid #e9ecef !important;
+        border-top: 1px solid #EAECF0 !important;
     }
 
     .transaction-action-links {
