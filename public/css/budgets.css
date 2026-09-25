@@ -75,7 +75,7 @@
 }
 
 .budget-action-link {
-    color: #0d6efd;
+    color: #1f6b5c;
     font-size: 0.875rem;
     font-weight: 600;
 }
@@ -119,8 +119,8 @@
     height: 3.5rem;
     margin-bottom: 1rem;
     border-radius: 50%;
-    color: #0d6efd;
-    background-color: #e7f1ff;
+    color: #1f6b5c;
+    background-color: #e7f0ed;
     font-size: 1.35rem;
     font-weight: 700;
 }
@@ -189,12 +189,12 @@
 .budget-form-group input:focus,
 .budget-form-group select:focus {
     outline: none;
-    border-color: #4f46e5;
+    border-color: #1f6b5c;
 }
 
 .budget-form-group input:focus-visible,
 .budget-form-group select:focus-visible {
-    outline: 3px solid #80bdff;
+    outline: 3px solid #8fb8ad;
     outline-offset: 2px;
 }
 
