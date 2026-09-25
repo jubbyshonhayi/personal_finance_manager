@@ -299,7 +299,7 @@ def login():
             session["user_id"] = str(user.id)
 
         flash(
-            "Login successful.",
+            "Logged in successfully.",
             "success"
         )
 
