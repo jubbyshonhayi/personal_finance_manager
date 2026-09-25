@@ -17,6 +17,34 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    const forms =
+        document.querySelectorAll("form[method='POST'], form[method='post']");
+
+    for (const form of forms) {
+        form.addEventListener("submit", (event) => {
+            if (form.dataset.submitting === "true") {
+                event.preventDefault();
+                return;
+            }
+
+            form.dataset.submitting = "true";
+
+            const submitButtons =
+                form.querySelectorAll("button[type='submit'], input[type='submit']");
+
+            const processingText =
+                form.dataset.processingText || "Processing...";
+
+            for (const button of submitButtons) {
+                button.disabled = true;
+
+                if (button.tagName === "BUTTON") {
+                    button.textContent = processingText;
+                }
+            }
+        });
+    }
+
     const flashMessages =
         document.querySelectorAll(".flash-message");
 
