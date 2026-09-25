@@ -96,7 +96,8 @@ def create_transaction(
         )
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
         ON CONFLICT (user_id, request_id)
-        DO NOTHING
+        DO UPDATE SET
+            request_id = transactions.request_id
         RETURNING
             id,
             user_id,
@@ -117,27 +118,6 @@ def create_transaction(
             transaction_date,
             request_id
         )
-    ).fetchone()
-
-    if row is not None:
-        return _row_to_transaction(row)
-
-    row = connection.execute(
-        """
-        SELECT
-            id,
-            user_id,
-            amount,
-            currency,
-            transaction_type,
-            category_id,
-            description,
-            transaction_date
-        FROM transactions
-        WHERE user_id = %s
-          AND request_id = %s;
-        """,
-        (user_id, request_id)
     ).fetchone()
 
     return _row_to_transaction(row)
