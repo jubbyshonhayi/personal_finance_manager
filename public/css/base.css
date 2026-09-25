@@ -61,8 +61,25 @@ textarea {
 }
 
 .navbar-toggler {
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    width: 2.75rem;
+    height: 2.5rem;
     margin-left: auto;
-    border-color: #ced4da;
+    padding: 0.4rem;
+    border: 1px solid #ced4da;
+    border-radius: 0.4rem;
+    background-color: #ffffff;
+}
+
+.navbar-toggler-bar {
+    display: block;
+    width: 1.25rem;
+    height: 2px;
+    background-color: #495057;
 }
 
 .navbar-toggler:focus {
