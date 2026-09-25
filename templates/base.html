@@ -35,7 +35,7 @@
 
                 <a
                     class="navbar-brand"
-                    href="{{ url_for('home.home_page') }}"
+                    href="{% if session.get("user_id") %}{{ url_for('dashboard.dashboard_page') }}{% else %}{{ url_for('home.home_page') }}{% endif %}"
                 >
                     Personal Finance Manager
                 </a>
@@ -70,21 +70,21 @@
                             </a>
 
                             <a
+                                href="{{ url_for('transaction.add_transaction') }}"
+                                {% if request.endpoint == "transaction.add_transaction" %}
+                                    aria-current="page"
+                                {% endif %}
+                            >
+                                Record Transaction
+                            </a>
+
+                            <a
                                 href="{{ url_for('transaction.transactions_page') }}"
                                 {% if request.endpoint == "transaction.transactions_page" %}
                                     aria-current="page"
                                 {% endif %}
                             >
                                 View Transactions
-                            </a>
-
-                            <a
-                                href="{{ url_for('transaction.add_transaction') }}"
-                                {% if request.endpoint == "transaction.add_transaction" %}
-                                    aria-current="page"
-                                {% endif %}
-                            >
-                                Add Transaction
                             </a>
 
                             <a
