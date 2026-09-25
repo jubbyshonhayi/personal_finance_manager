@@ -64,7 +64,7 @@ def apply_security_headers(response):
         "frame-src 'none'; "
         "img-src 'self' data:; "
         "object-src 'none'; "
-        "script-src 'self' https://cdn.jsdelivr.net; "
+        "script-src 'self'; "
         "style-src 'self' https://cdn.jsdelivr.net;"
     )
 
