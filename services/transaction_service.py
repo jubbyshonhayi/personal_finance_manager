@@ -68,7 +68,8 @@ def create_transaction(
     transaction_type: TransactionType,
     category_id: UUID,
     description: str | None,
-    transaction_date: date
+    transaction_date: date,
+    request_id: UUID
 ) -> Transaction:
     """
     Creates a transaction for a user using the provided
@@ -76,6 +77,10 @@ def create_transaction(
 
     Database constraints and triggers provide the final
     integrity and authorization checks.
+
+    The request ID makes transaction creation idempotent for a
+    given user. If the same request is received again, the
+    existing transaction is returned instead of creating a duplicate.
     """
     row = connection.execute(
         """
@@ -86,9 +91,12 @@ def create_transaction(
             transaction_type,
             category_id,
             description,
-            transaction_date
+            transaction_date,
+            request_id
         )
-        VALUES (%s, %s, %s, %s, %s, %s, %s)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+        ON CONFLICT (user_id, request_id)
+        DO NOTHING
         RETURNING
             id,
             user_id,
@@ -106,8 +114,30 @@ def create_transaction(
             transaction_type.value,
             category_id,
             description,
-            transaction_date
+            transaction_date,
+            request_id
         )
+    ).fetchone()
+
+    if row is not None:
+        return _row_to_transaction(row)
+
+    row = connection.execute(
+        """
+        SELECT
+            id,
+            user_id,
+            amount,
+            currency,
+            transaction_type,
+            category_id,
+            description,
+            transaction_date
+        FROM transactions
+        WHERE user_id = %s
+          AND request_id = %s;
+        """,
+        (user_id, request_id)
     ).fetchone()
 
     return _row_to_transaction(row)
