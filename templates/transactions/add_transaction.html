@@ -29,6 +29,12 @@
                     value="{{ csrf_token() }}"
                 >
 
+                <input
+                    type="hidden"
+                    name="request_id"
+                    value="{{ request_id }}"
+                >
+
                 <div class="form-group">
                     <label for="amount">
                         Amount
