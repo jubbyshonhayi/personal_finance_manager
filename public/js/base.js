@@ -32,11 +32,14 @@ document.addEventListener("DOMContentLoaded", () => {
             const submitButtons =
                 form.querySelectorAll("button[type='submit'], input[type='submit']");
 
+            const processingText =
+                form.dataset.processingText || "Processing...";
+
             for (const button of submitButtons) {
                 button.disabled = true;
 
                 if (button.tagName === "BUTTON") {
-                    button.textContent = "Processing...";
+                    button.textContent = processingText;
                 }
             }
         });
