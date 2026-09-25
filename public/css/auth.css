@@ -13,8 +13,8 @@
     width: 100%;
     max-width: 460px;
     padding: 2rem;
-    background: #ffffff;
-    border: 1px solid #e1e4e8;
+    background: #FFFFFF;
+    border: 1px solid #E4E7EC;
     border-radius: 10px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
@@ -32,7 +32,7 @@
 
 .auth-card .page-header p {
     margin: 0;
-    color: #6b7280;
+    color: #667085;
     font-size: 0.95rem;
 }
 
@@ -46,7 +46,7 @@
 .auth-card .form-group label {
     display: block;
     margin-bottom: 0.45rem;
-    color: #374151;
+    color: #344054;
     font-size: 0.875rem;
     font-weight: 600;
 }
@@ -54,26 +54,26 @@
 .auth-card .form-group input {
     width: 100%;
     padding: 0.7rem 0.75rem;
-    border: 1px solid #d1d5db;
+    border: 1px solid #D0D5DD;
     border-radius: 6px;
-    background: #ffffff;
-    color: #1f2937;
+    background: #FFFFFF;
+    color: #172B4D;
     font: inherit;
     font-size: 0.9rem;
     box-sizing: border-box;
 }
 
 .auth-card .form-group input:hover {
-    border-color: #9ca3af;
+    border-color: #98A2B3;
 }
 
 .auth-card .form-group input:focus {
     outline: none;
-    border-color: #4f46e5;
+    border-color: #155EEF;
 }
 
 .auth-card .form-group input:focus-visible {
-    outline: 3px solid #80bdff;
+    outline: 3px solid #84CAFF;
     outline-offset: 2px;
 }
 
@@ -96,7 +96,7 @@
     padding: 0.25rem 0.4rem;
     border: 0;
     background: transparent;
-    color: #4f46e5;
+    color: #155EEF;
     font: inherit;
     font-size: 0.8rem;
     font-weight: 600;
@@ -104,11 +104,11 @@
 }
 
 .password-toggle:hover {
-    color: #4338ca;
+    color: #004EEB;
 }
 
 .password-toggle:focus-visible {
-    outline: 2px solid #80bdff;
+    outline: 2px solid #84CAFF;
     outline-offset: 2px;
     border-radius: 4px;
 }
@@ -125,13 +125,13 @@
     justify-content: center;
     gap: 0.35rem;
     margin-top: 1.5rem;
-    color: #6b7280;
+    color: #667085;
     font-size: 0.875rem;
     text-align: center;
 }
 
 .auth-links a {
-    color: #4f46e5;
+    color: #155EEF;
     font-weight: 600;
     text-decoration: none;
 }
