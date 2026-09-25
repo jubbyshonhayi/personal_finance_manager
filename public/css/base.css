@@ -14,8 +14,8 @@ body {
     display: flex;
     flex-direction: column;
     font-family: Arial, Helvetica, sans-serif;
-    color: #212529;
-    background-color: #f5f7fa;
+    color: #172B4D;
+    background-color: #F7F8FA;
     line-height: 1.5;
 }
 
@@ -39,8 +39,8 @@ textarea {
     position: sticky;
     top: 0;
     z-index: 1000;
-    background-color: #ffffff;
-    border-bottom: 1px solid #dee2e6;
+    background-color: #FFFFFF;
+    border-bottom: 1px solid #E4E7EC;
 }
 
 .navbar-container {
@@ -57,7 +57,7 @@ textarea {
     margin-right: 0;
     font-size: 1.15rem;
     font-weight: 700;
-    color: #212529;
+    color: #172B4D;
 }
 
 .navbar-toggler {
@@ -70,16 +70,16 @@ textarea {
     height: 2.5rem;
     margin-left: auto;
     padding: 0.4rem;
-    border: 1px solid #ced4da;
+    border: 1px solid #D0D5DD;
     border-radius: 0.4rem;
-    background-color: #ffffff;
+    background-color: #FFFFFF;
 }
 
 .navbar-toggler-bar {
     display: block;
     width: 1.25rem;
     height: 2px;
-    background-color: #495057;
+    background-color: #667085;
 }
 
 .navbar-toggler:focus {
@@ -105,14 +105,14 @@ textarea {
 }
 
 .navbar-links-content a {
-    color: #495057;
+    color: #667085;
     font-size: 0.95rem;
     font-weight: 500;
 }
 
 .navbar-links-content a:hover,
 .navbar-links-content a[aria-current="page"] {
-    color: #0d6efd;
+    color: #155EEF;
 }
 
 .logout-form {
@@ -123,7 +123,7 @@ textarea {
     padding: 0;
     border: 0;
     background: transparent;
-    color: #495057;
+    color: #667085;
     font: inherit;
     font-size: 0.95rem;
     font-weight: 500;
@@ -131,7 +131,7 @@ textarea {
 }
 
 .logout-button:hover {
-    color: #0d6efd;
+    color: #155EEF;
 }
 
 
@@ -142,7 +142,7 @@ button:focus-visible,
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
-    outline: 3px solid #80bdff;
+    outline: 3px solid #84CAFF;
     outline-offset: 2px;
 }
 
@@ -163,7 +163,7 @@ textarea:focus-visible {
 
 .page-header p {
     margin: 0.25rem 0 0;
-    color: #6c757d;
+    color: #667085;
 }
 
 .button {
@@ -188,46 +188,46 @@ textarea:focus-visible {
 }
 
 .button-primary {
-    color: #ffffff;
-    background-color: #0d6efd;
+    color: #FFFFFF;
+    background-color: #155EEF;
 }
 
 .button-primary:hover {
-    color: #ffffff;
-    background-color: #0b5ed7;
+    color: #FFFFFF;
+    background-color: #004EEB;
 }
 
 .button-secondary {
-    color: #212529;
-    background-color: #ffffff;
-    border: 1px solid #ced4da;
+    color: #172B4D;
+    background-color: #FFFFFF;
+    border: 1px solid #D0D5DD;
 }
 
 .button-secondary:hover {
-    color: #212529;
-    background-color: #f8f9fa;
+    color: #172B4D;
+    background-color: #F2F4F7;
 }
 
 .button-danger {
-    color: #ffffff;
-    background-color: #dc3545;
+    color: #FFFFFF;
+    background-color: #D92D20;
 }
 
 .button-danger:hover {
-    color: #ffffff;
-    background-color: #bb2d3b;
+    color: #FFFFFF;
+    background-color: #B42318;
 }
 
 .back-link {
     display: block;
     margin-top: 1.25rem;
-    color: #6c757d;
+    color: #667085;
     font-size: 0.875rem;
     text-align: center;
 }
 
 .back-link:hover {
-    color: #374151;
+    color: #344054;
     text-decoration: underline;
 }
 
@@ -249,9 +249,9 @@ textarea:focus-visible {
 
 .site-footer {
     margin-top: auto;
-    border-top: 1px solid #dee2e6;
-    background-color: #ffffff;
-    color: #6c757d;
+    border-top: 1px solid #E4E7EC;
+    background-color: #FFFFFF;
+    color: #667085;
 }
 
 .site-footer-container {
@@ -305,27 +305,27 @@ textarea:focus-visible {
 }
 
 .flash-success {
-    color: #146c43;
-    background-color: #d1e7dd;
-    border-color: #a3cfbb;
+    color: #155EEF;
+    background-color: #E0F2FE;
+    border-color: #B9E6FE;
 }
 
 .flash-danger {
-    color: #b02a37;
-    background-color: #f8d7da;
-    border-color: #f1aeb5;
+    color: #B42318;
+    background-color: #FEE4E2;
+    border-color: #FECDCA;
 }
 
 .flash-warning {
-    color: #997404;
-    background-color: #fff3cd;
-    border-color: #ffecb5;
+    color: #8A5B00;
+    background-color: #FFF4CC;
+    border-color: #FDE68A;
 }
 
 .flash-info {
-    color: #055160;
-    background-color: #cff4fc;
-    border-color: #9eeaf9;
+    color: #155EEF;
+    background-color: #E0F2FE;
+    border-color: #B9E6FE;
 }
 
 
