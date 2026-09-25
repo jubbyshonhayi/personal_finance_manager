@@ -76,13 +76,23 @@ CREATE TABLE transactions (
 
     description VARCHAR(500),
 
-    transaction_date DATE NOT NULL
+    transaction_date DATE NOT NULL,
+
+    -- Identifies the logical form submission that created this transaction.
+    -- Combined with user_id, this prevents duplicate transaction creation
+    -- when the same request is submitted more than once.
+    request_id UUID NOT NULL
 );
 
 
 -- Speeds up joins and foreign-key checks involving categories.
 CREATE INDEX transactions_category_id_idx
 ON transactions (category_id);
+
+-- Prevents the same transaction form submission from creating
+-- multiple transactions for the same user.
+CREATE UNIQUE INDEX transactions_user_request_id_unique
+ON transactions (user_id, request_id);
 
 
 -- Ensures a transaction can only use:
