@@ -35,7 +35,7 @@
 
                 <a
                     class="navbar-brand"
-                    href="{% if session.get("user_id") %}{{ url_for('dashboard.dashboard_page') }}{% else %}{{ url_for('home.home_page') }}{% endif %}"
+                    href="{% if session.get('user_id') %}{{ url_for('dashboard.dashboard_page') }}{% else %}{{ url_for('home.home_page') }}{% endif %}"
                 >
                     Personal Finance Manager
                 </a>
