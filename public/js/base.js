@@ -21,8 +21,9 @@ document.addEventListener("DOMContentLoaded", () => {
         document.querySelectorAll("form[method='POST'], form[method='post']");
 
     for (const form of forms) {
-        form.addEventListener("submit", () => {
+        form.addEventListener("submit", (event) => {
             if (form.dataset.submitting === "true") {
+                event.preventDefault();
                 return;
             }
 
