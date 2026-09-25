@@ -758,22 +758,22 @@ def delete_transaction_page(transaction_id):
         )
 
     with pool.connection() as connection:
-        existing_transaction = get_transaction_for_user(
-            connection=connection,
-            user_id=user_id,
-            transaction_id=transaction_id
-        )
-
-        if existing_transaction is None:
-            flash(
-                "Transaction not found.",
-                "danger"
-            )
-            return redirect(
-                url_for("transaction.transactions_page")
-            )
-
         if request.method == "GET":
+            existing_transaction = get_transaction_for_user(
+                connection=connection,
+                user_id=user_id,
+                transaction_id=transaction_id
+            )
+
+            if existing_transaction is None:
+                flash(
+                    "Transaction not found.",
+                    "danger"
+                )
+                return redirect(
+                    url_for("transaction.transactions_page")
+                )
+
             return render_template(
                 "transactions/delete_transaction.html",
                 transaction=existing_transaction
@@ -787,8 +787,8 @@ def delete_transaction_page(transaction_id):
 
     if not deleted:
         flash(
-            "Transaction not found.",
-            "danger"
+            "Transaction was already deleted.",
+            "info"
         )
         return redirect(
             url_for("transaction.transactions_page")
