@@ -1,4 +1,4 @@
-# Personal Finance Manager + Insights
+# Finora (Personal Finance Manager) + Insights
 
 A web-based personal finance application built with Python and Flask. Users can manage income and expenses, organize transactions into categories, set budgets, view financial reports, and securely manage their accounts.
 
@@ -90,7 +90,7 @@ SESSION_COOKIE_SECURE=false
 
 BREVO_API_KEY=your_brevo_api_key
 BREVO_SENDER_EMAIL=your_verified_sender_email
-BREVO_SENDER_NAME=Personal Finance Manager
+BREVO_SENDER_NAME=Finora (Personal Finance Manager)
 ```
 
 Initialize the database:

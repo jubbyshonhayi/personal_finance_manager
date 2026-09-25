@@ -52,13 +52,13 @@
 .form-group select:focus,
 .form-group textarea:focus {
     outline: none;
-    border-color: #4f46e5;
+    border-color: #1f6b5c;
 }
 
 .form-group input:focus-visible,
 .form-group select:focus-visible,
 .form-group textarea:focus-visible {
-    outline: 3px solid #80bdff;
+    outline: 3px solid #8fb8ad;
     outline-offset: 2px;
 }
 
@@ -73,7 +73,7 @@
 .secondary-link {
     display: inline-block;
     margin-top: 0.5rem;
-    color: #4f46e5;
+    color: #1f6b5c;
     font-size: 0.8125rem;
     text-decoration: none;
 }
@@ -97,12 +97,12 @@
 }
 
 .button-primary {
-    background: #4f46e5;
+    background: #1f6b5c;
     color: #ffffff;
 }
 
 .button-primary:hover {
-    background: #4338ca;
+    background: #19564a;
 }
 
 .button-danger {
@@ -364,7 +364,7 @@
 }
 
 .transaction-action-link {
-    color: #0d6efd;
+    color: #1f6b5c;
     font-size: 0.85rem;
     font-weight: 600;
     text-decoration: none;
@@ -398,7 +398,7 @@
     justify-content: center;
     min-height: 2.4rem;
     padding: 0.5rem 0.8rem;
-    color: #0d6efd;
+    color: #1f6b5c;
     background-color: #ffffff;
     border: 1px solid #ced4da;
     border-radius: 0.45rem;
@@ -422,7 +422,7 @@
 /* View-all link */
 
 .view-all {
-    color: #0d6efd;
+    color: #1f6b5c;
     font-size: 0.9rem;
     font-weight: 600;
     text-decoration: none;
