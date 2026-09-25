@@ -95,7 +95,7 @@ textarea {
 
 .navbar-links-content a:hover,
 .navbar-links-content a[aria-current="page"] {
-    color: #1f6b5c;
+    color: #0d6efd;
 }
 
 .logout-form {
@@ -114,7 +114,7 @@ textarea {
 }
 
 .logout-button:hover {
-    color: #1f6b5c;
+    color: #0d6efd;
 }
 
 
@@ -125,7 +125,7 @@ button:focus-visible,
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
-    outline: 3px solid #8fb8ad;
+    outline: 3px solid #80bdff;
     outline-offset: 2px;
 }
 
@@ -172,12 +172,12 @@ textarea:focus-visible {
 
 .button-primary {
     color: #ffffff;
-    background-color: #1f6b5c;
+    background-color: #0d6efd;
 }
 
 .button-primary:hover {
     color: #ffffff;
-    background-color: #19564a;
+    background-color: #0b5ed7;
 }
 
 .button-secondary {

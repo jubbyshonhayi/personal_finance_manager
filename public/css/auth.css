@@ -69,11 +69,11 @@
 
 .auth-card .form-group input:focus {
     outline: none;
-    border-color: #1f6b5c;
+    border-color: #4f46e5;
 }
 
 .auth-card .form-group input:focus-visible {
-    outline: 3px solid #8fb8ad;
+    outline: 3px solid #80bdff;
     outline-offset: 2px;
 }
 
@@ -96,7 +96,7 @@
     padding: 0.25rem 0.4rem;
     border: 0;
     background: transparent;
-    color: #1f6b5c;
+    color: #4f46e5;
     font: inherit;
     font-size: 0.8rem;
     font-weight: 600;
@@ -104,11 +104,11 @@
 }
 
 .password-toggle:hover {
-    color: #19564a;
+    color: #4338ca;
 }
 
 .password-toggle:focus-visible {
-    outline: 2px solid #8fb8ad;
+    outline: 2px solid #80bdff;
     outline-offset: 2px;
     border-radius: 4px;
 }
@@ -131,7 +131,7 @@
 }
 
 .auth-links a {
-    color: #1f6b5c;
+    color: #4f46e5;
     font-weight: 600;
     text-decoration: none;
 }

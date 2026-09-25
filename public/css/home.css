@@ -9,7 +9,11 @@
 
 .hero-section {
     padding: 4rem 1rem 5rem;
-    background-color: #173f36;
+    background: linear-gradient(
+        135deg,
+        #0d6efd 0%,
+        #6610f2 100%
+    );
     color: #ffffff;
 }
 
@@ -55,7 +59,7 @@
 }
 
 .hero-section .button-primary {
-    color: #1f6b5c;
+    color: #0d6efd;
     background-color: #ffffff;
 }
 
@@ -93,7 +97,7 @@
 
 .section-label {
     margin: 0 0 0.75rem;
-    color: #1f6b5c;
+    color: #4f46e5;
     font-size: 0.8rem;
     font-weight: 700;
     letter-spacing: 0.08em;
@@ -168,11 +172,11 @@
 
 .cta-content .button {
     color: #ffffff;
-    background-color: #1f6b5c;
+    background-color: #0d6efd;
 }
 
 .cta-content .button:hover {
-    background-color: #19564a;
+    background-color: #0b5ed7;
 }
 
 
